@@ -1,0 +1,39 @@
+@import "./scheme.scss";
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  font-synthesis: none;
+
+  line-height: 1.5;
+
+  color: var(--main-color);
+  color-scheme: light dark;
+  background-color: var(--main-bg-color);
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @include light();
+
+  @media (prefers-color-scheme: dark) {
+    @include dark();
+  }
+}
+
+body {
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  place-items: center;
+}
+
+#app {
+  display: flex;
+  gap: 20px;
+  margin: 0 auto;
+  overflow: auto;
+}

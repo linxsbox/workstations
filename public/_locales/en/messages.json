@@ -1,0 +1,14 @@
+{
+  "appNameShort": { "message": "短名" },
+  "manifest_app_name": { "message": "全名" },
+  "manifest_app_description": {
+    "message": "简介"
+  },
+  "about_version": {
+    "message": "版本 $VERSION$",
+    "placeholders": {
+      "_unused_0": { "content": "$0" },
+      "VERSION": { "content": "$1" }
+    }
+  }
+}
