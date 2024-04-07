@@ -1,16 +1,18 @@
 @import "./scheme.scss";
 
 :root {
+  width: 100vw;
+  height: 100vh;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-weight: 400;
   font-synthesis: none;
 
   line-height: 1.5;
-
   color: var(--main-color);
-  color-scheme: light dark;
   background-color: var(--main-bg-color);
+
+  color-scheme: light dark;
 
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -27,13 +29,17 @@ body {
   display: flex;
   min-width: 320px;
   min-height: 100vh;
+  height: 100%;
   margin: 0;
-  place-items: center;
+  // place-items: center;
 }
 
 #app {
   display: flex;
-  gap: 20px;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 1920px;
+  height: 100%;
   margin: 0 auto;
   overflow: auto;
 }

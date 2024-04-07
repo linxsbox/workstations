@@ -1,74 +1,23 @@
 import { defineStore } from "pinia";
-import { ChromeAPI } from "@/utils/chrome";
-import RssConfig from "../config";
+import { localStorages } from "@/utils/index";
+import RssConfig, { rssGroupType } from "../config";
 
-const USER_KEY = "USER_CONFIG";
-const chroemAPI = new ChromeAPI(USER_KEY);
+import { storeSettings } from "../storeSettings/index";
 
-const sec2min = (sec) => {
-  return `${`${sec / 60}`.split(".")[0]} 分钟`;
-};
+// const USER_KEY = "USER_CONFIG";
+// const chroemAPI = new ChromeAPI(USER_KEY);
 
-const timeBefore = (now, time) => {
-  const diff = now - +new Date(time);
-  const seconds = Math.round(diff / 1000);
-  const minutes = Math.round(seconds / 60);
-  const hours = Math.round(minutes / 60);
-  const days = Math.round(hours / 24);
-  const months = Math.round(days / 30);
-  const years = Math.round(days / 365);
+const updateTimeStorage = localStorages("UPDATE_TIME");
+const cacheData = localStorages("CACHE_DATA");
 
-  if (seconds < 60) {
-    return `${seconds} 秒之前`;
-  } else if (minutes < 60) {
-    return `${minutes} 分钟之前`;
-  } else if (hours < 24) {
-    return `${hours} 小时之前`;
-  } else if (days < 30) {
-    return `${days} 天之前`;
-  } else if (months < 12) {
-    return `${months} 月之前`;
-  } else {
-    return `${years} 年之前`;
-  }
-};
-
-const hex2rgb = (hex = "") => {
-  const hexArr = hex.slice(1).split(""); // 去掉#，并转换为数组
-  if (hexArr.length === 3) {
-    hexArr.push(hexArr[0], hexArr[1], hexArr[2]); // 如果是简短格式，则扩展为完整格式
-  }
-  const r = parseInt(hexArr.splice(0, 2).join(""), 16); // 红色
-  const g = parseInt(hexArr.splice(0, 2).join(""), 16); // 绿色
-  const b = parseInt(hexArr.splice(0, 2).join(""), 16); // 蓝色
-
-  return { r, g, b };
-};
-
-const image2Base64 = async (url) => {
-  const res = await fetch(url);
-
-  const blob = await res.blob();
-
-  const base64 = await new Promise((resolve) => {
-    const fReader = new FileReader();
-    fReader.onloadend = () => resolve(fReader.result);
-    fReader.readAsDataURL(blob);
-  });
-
-  return base64;
-};
-
-const KEY_UPDATE_TIME = "update-time";
-const KEY_CACHE = "cache-data";
 const checkUpdate = () => {
   const now = +new Date();
-  const lastTime = window.localStorage.getItem(KEY_UPDATE_TIME) || 1;
+  const lastTime = updateTimeStorage.get() || 1;
 
-  const diffmin = now - lastTime * 1 >= 30 * 60 * 1000;
+  const diffmin = now - lastTime * 1 >= 10 * 60 * 1000 - 100;
   if (!diffmin) return false;
 
-  window.localStorage.setItem(KEY_UPDATE_TIME, +new Date());
+  updateTimeStorage.set(+new Date());
   return true;
 };
 
@@ -82,77 +31,95 @@ export const storeRss = defineStore({
   },
   actions: {
     async init() {
+      if (chrome && chrome.alarms) {
+        chrome.alarms.onAlarm.addListener(() => {
+          this.forceUpdate();
+        });
+      }
+
       return await this.fetchRssList();
     },
-    setAddRss() {},
-    setFollowRss() {},
     async fetchRssList() {
-      const cache = window.localStorage.getItem(KEY_CACHE);
+      const cache = cacheData.get();
+      const active = storeSettings().getRssTypeActive;
 
-      if (!checkUpdate() && cache && this.rssList.length) return;
-
-      if (cache && !this.rssList.length) {
-        this.rssList = JSON.parse(cache);
+      if (cache && cache[active]) {
+        this.rssList = cache[active] || [];
         return;
       }
 
-      const fm = RssConfig.fm.list[0];
+      if (!checkUpdate() && cache[active] && this.rssList.length) return;
 
-      const tmpList = [];
-      for (let index = 0; index < fm.recommend.length; index++) {
-        const item = fm.recommend[index];
+      const dataItems = RssConfig.filter((item) => item.group === active);
 
-        const res = await fetch(`${fm.apis.list}${item.id}`);
-        if (res.status !== 200) return;
+      const list = [];
+      // 分类列表
+      for (let index = 0; index < dataItems.length; index++) {
+        const item = dataItems[index];
 
-        const serverTime = new Date(res.headers.get("Date"));
+        if (active === rssGroupType.xiaoyuzhoufm) {
+          const childData = await item.dataMatch(item);
+          if (Array.isArray(childData) && childData.length) {
+            list.push(...childData);
+          } else {
+            list.push(childData);
+          }
+        } else {
+          const res = await fetch(item.apis.list);
+          if (res.status !== 200) return;
 
-        const matchTxt = fm.dataMatch.exec(await res.text());
-        if (matchTxt.length < 2) return;
-
-        try {
-          const dataJSON = JSON.parse(matchTxt[1]);
-
-          console.log(dataJSON);
-
-          const { title, brief, episodes, image, color, podcasters } =
-            dataJSON.props?.pageProps?.podcast || {};
-
-          const imgBase64 = await image2Base64(image.smallPicUrl);
-
-          const list = (episodes || []).map((item) => ({
-            title: item.title,
-            description: item.description,
-            mediaUrl: item.enclosure.url,
-            link: `${fm.apis.details}${item.eid}`,
-            duration: sec2min(item.duration),
-            timeAgo: timeBefore(+serverTime, item.pubDate),
-          }));
-
-          const author = podcasters.map((item) => item.nickname).join("、");
-
-          const { r, g, b } = hex2rgb(color.original);
-
-          tmpList.push({
-            title,
-            author,
-            brief,
-            list,
-            image: imgBase64,
-            id: item.id,
-            color: {
-              ...color,
-              themeRGB: `${[r, g, b]}`,
-            },
-          });
-        } catch (error) {
-          console.log(error);
+          const data = await item.dataMatch(await res.text(), item);
+          list.push({ ...data, id: dataItems.id });
         }
       }
-      this.rssList = tmpList;
-      window.localStorage.setItem(KEY_CACHE, JSON.stringify(tmpList));
+
+      if (!cache) {
+        cacheData.set({ [active]: [...list] });
+      } else {
+        cache[active] = list;
+        cacheData.set(cache);
+      }
+
+      this.rssList = list;
+    },
+    async forceUpdate() {
+      const cache = cacheData.get();
+      Object.values(rssGroupType).forEach(async (active) => {
+        const dataItems = RssConfig.filter((item) => item.group === active);
+
+        const list = [];
+        // 分类列表
+        for (let index = 0; index < dataItems.length; index++) {
+          const item = dataItems[index];
+
+          if (active === rssGroupType.xiaoyuzhoufm) {
+            const childData = await item.dataMatch(item);
+            if (Array.isArray(childData) && childData.length) {
+              list.push(...childData);
+            } else {
+              list.push(childData);
+            }
+          } else {
+            const res = await fetch(item.apis.list);
+            if (res.status !== 200) return;
+
+            const data = await item.dataMatch(await res.text(), item);
+            list.push({ ...data, id: dataItems.id });
+          }
+        }
+
+        if (!cache) {
+          cacheData.set({ [active]: [...list] });
+        } else {
+          cache[active] = list;
+          cacheData.set(cache);
+        }
+      });
     },
   },
+
+  setAddRss() {},
+  setFollowRss() {},
 });
 
 // "USER_CONFIG";

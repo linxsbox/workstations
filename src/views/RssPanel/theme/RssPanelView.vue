@@ -18,7 +18,7 @@ const originThemeColor = computed(() => {
 </script>
 
 <template>
-  <div class="rss-panel-box flex flex-col h-screen flex-none overflow-hidden">
+  <div class="rss-panel-box flex flex-col flex-none overflow-hidden">
     <div
       class="rss-list-box flex-auto flex flex-col gap-3 px-4 pb-4 overflow-y-auto overflow-x-hidden"
       :style="originThemeColor"
@@ -27,10 +27,10 @@ const originThemeColor = computed(() => {
       <header
         class="rss-header sticky top-0 flex-none flex gap-2 items-center p-4 -mx-4 z-10"
       >
-        <figure class="flex-none">
+        <figure class="flex-none h-12">
           <picture>
             <img
-              class="size-12 opacity-65"
+              class="size-12"
               :src="props.data.image"
               v-if="props.data.image"
             />
@@ -40,7 +40,7 @@ const originThemeColor = computed(() => {
           <div class="title text-lg pb-1">
             {{ props.data.title }}
           </div>
-          <div class="flex justify-between text-14">
+          <div class="flex justify-between h-[14px] text-14 leading-none">
             <div>{{ props.data.author }}</div>
             <div>{{ props.data.brief }}</div>
           </div>
