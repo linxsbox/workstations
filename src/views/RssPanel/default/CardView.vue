@@ -12,7 +12,7 @@ const props = defineProps({
     <div class="info">
       <a
         class="title text-14 font-bold cursor-pointer"
-        :href="props.data.home"
+        :href="props.data.link"
         target="_blank"
         rel="noopener noreferrer"
       >
