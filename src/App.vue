@@ -1,4 +1,5 @@
 <script setup>
+import { isMobileDevice } from "@/utils/tools.js";
 import HeaderBarView from "@/components/HeaderBar/HeaderBarView.vue";
 import RssPanelView from "./views/RssPanel/default/RssPanelView.vue";
 import RssPanelThemeView from "./views/RssPanel/theme/RssPanelView.vue";
@@ -13,6 +14,12 @@ const { getRssList } = storeToRefs(store);
 store.init();
 
 const { getRssTypeActive } = storeToRefs(storeSettings());
+
+if (isMobileDevice()) {
+  // 执行移动设备上的代码
+} else {
+  // 执行桌面设备上的代码
+}
 </script>
 
 <template>

@@ -30,7 +30,7 @@ const originThemeColor = computed(() => {
         <figure class="flex-none h-12">
           <picture>
             <img
-              class="size-12"
+              class="size-12 rounded-lg"
               :src="props.data.image"
               v-if="props.data.image"
             />
@@ -75,6 +75,12 @@ const originThemeColor = computed(() => {
         font-weight: bold;
       }
     }
+  }
+}
+.is-window {
+  .rss-list-box {
+    --scrollbar-thumb: rgba(var(--origin-theme-rgb), 0.35);
+    --scrollbar-thumb-hover: rgba(var(--origin-theme-rgb), 0.65);
   }
 }
 </style>

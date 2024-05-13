@@ -1,5 +1,17 @@
-export const checkUserAgent = () => {
-  console.log(navigator.userAgent);
+export const isMobileDevice = () => {
+  // 首先，检查 User-Agent 字符串是否包含移动设备的标识
+  const isMobileByUserAgent = /iPhone|iPad|iPod|Android/i.test(
+    navigator.userAgent
+  );
+
+  // 如果 User-Agent 字符串不包含移动设备的标识，那么检查窗口的 matchMedia 方法是否支持
+  const isMobileByMatchMedia = window.matchMedia("(max-width: 768px)").matches;
+
+  // 检查 ontouchevent 是否存在
+  const isMobileByOnTouchStart = "ontouchstart" in window;
+
+  // 如果上述三个条件之一满足，那么就认为用户正在使用移动设备访问网站
+  return isMobileByUserAgent || isMobileByMatchMedia || isMobileByOnTouchStart;
 };
 
 export const hex2rgb = (hex = "") => {
