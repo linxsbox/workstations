@@ -1,13 +1,13 @@
-import { localStorages } from "@/utils/storage";
+import { localStorage } from "@linxs/toolkit";
 import { rmSecAndZone, timeBefore, sec2min } from "@/utils/time";
 import {
   hex2rgb,
   image2Base64,
   getNodeTextContent,
-  parseRssXML,
-} from "@/utils/tools";
+  parseXML,
+} from "@linxs/toolkit";
 
-const cacheImage = localStorages("CACHE_IMAGE");
+const STORAGE_KEY = "CACHE_IMAGE";
 
 const dataType = ["播客", "IT资讯", "新闻资讯"];
 export const rssGroupType = Object.freeze({
@@ -16,7 +16,7 @@ export const rssGroupType = Object.freeze({
 });
 
 const setCacheImage = async (id, url) => {
-  let imgData = cacheImage.get();
+  let imgData = localStorage.get(STORAGE_KEY);
   if (!imgData) {
     imgData = {};
   }
@@ -24,7 +24,7 @@ const setCacheImage = async (id, url) => {
   if (!imgData[id]) {
     const imgBase64 = await image2Base64(url);
     imgData[id] = imgBase64;
-    cacheImage.set(imgData);
+    localStorage.set(STORAGE_KEY, imgData);
   }
 
   return imgData[id];
@@ -127,7 +127,7 @@ export default [
     },
     recommend: [],
     dataMatch: async (xmlData, data) => {
-      const res = parseRssXML(xmlData);
+      const res = parseXML(xmlData);
       if (!res) return {};
 
       const tempList = [];
@@ -161,7 +161,7 @@ export default [
     },
     recommend: [],
     dataMatch: async (xmlData, data) => {
-      const res = parseRssXML(xmlData);
+      const res = parseXML(xmlData);
       if (!res) return {};
 
       const tempList = [];
