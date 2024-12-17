@@ -1,15 +1,16 @@
 @import "./scheme.scss";
 
 :root {
+  --font-size: 16px;
   width: 100vw;
   height: 100vh;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-size: var(--font-size);
   font-weight: 400;
   font-synthesis: none;
 
   line-height: 1.5;
-  color: var(--main-color);
+  color: var(--text-primary);
   background-color: var(--main-bg-color);
 
   color-scheme: light dark;
@@ -18,9 +19,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  @include light();
+  @include baseVar();
 
   @media (prefers-color-scheme: dark) {
+    @include dark();
+  }
+
+  &[theme-mode="light"] {
+    @include light();
+  }
+  &[theme-mode="dark"] {
     @include dark();
   }
 }
@@ -49,15 +57,12 @@ body {
   min-height: 100vh;
   height: 100%;
   margin: 0;
-  // place-items: center;
 }
 
 #app {
   display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  width: 1920px;
+  width: 100%;
   height: 100%;
   margin: 0 auto;
-  overflow: auto;
+  overflow: hidden;
 }

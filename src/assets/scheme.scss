@@ -1,8 +1,7 @@
-@mixin light() {
-  --main-bg-color: #e6ecee;
-  --main-color: rgba(52, 55, 60, 0.8);
-
+@mixin baseVar() {
   --color-white: white;
+  --color-white-1: #f4f4f5;
+  --color-white-2: #e4e4e7;
   --color-white-alpha-1: rgba(255, 255, 255, 0.8);
   --color-white-alpha-2: rgba(255, 255, 255, 0.75);
   --color-white-alpha-3: rgba(255, 255, 255, 0.5);
@@ -10,8 +9,12 @@
   --color-white-alpha-5: rgba(255, 255, 255, 0.25);
   --color-white-alpha-6: rgba(255, 255, 255, 0.15);
   --color-white-alpha-7: rgba(255, 255, 255, 0.1);
+  --color-white-alpha-8: rgba(255, 255, 255, 0.05);
 
   --color-black: black;
+  --color-black-1: #0a0a0a;
+  --color-black-2: #1f1f22;
+  --color-black-3: #707070;
   --color-black-alpha-1: rgba(0, 0, 0, 0.8);
   --color-black-alpha-2: rgba(0, 0, 0, 0.75);
   --color-black-alpha-3: rgba(0, 0, 0, 0.5);
@@ -19,37 +22,126 @@
   --color-black-alpha-5: rgba(0, 0, 0, 0.25);
   --color-black-alpha-6: rgba(0, 0, 0, 0.15);
   --color-black-alpha-7: rgba(0, 0, 0, 0.1);
+  --color-black-alpha-8: rgba(0, 0, 0, 0.05);
 
-  --border-color-3: #e5e7eb;
-  --border-color-4: #6b6e75;
-  --border-radius: 10px;
-  --border-radius-s: 6px;
+  --border-radius: 6px;
+  --border-radius-0: 16px;
+  --border-radius-1: 14px;
+  --border-radius-2: 12px;
+  --border-radius-3: 10px;
+  --border-radius-4: 8px;
+
+  // 功能色
+  // --color-info: #1a73e8; // 信息
+  // --color-success: #34a853; // 成功
+  // --color-warning: #fbbc04; // 警告
+  // --color-error: #ea4335; // 错误
+}
+
+@mixin light() {
+  // 主题模式变量
+  // 1. 基础色板
+  // --color-primary: #1a73e8; // 主色
+  // --color-secondary: #5f6368; // 次要色
+  // --color-accent: #1967d2; // 强调色
+
+  // 2. 文本颜色
+  --text-primary: var(--color-black); // 主要文本
+  --text-secondary: #5f6973; // 次要文本
+  --text-disabled: var(--color-black-alpha-4); // 禁用文本
+  --text-inverse: var(--color-white); // 反色文本
+  --text-color-2: #4c5258;
+
+  // 3. 背景颜色
+  --bg-base: #f4f4f5; // 基础背景
+  --bg-primary: var(--color-white); // 主色背景
+  --bg-secondary: var(--color-white-alpha-3); // 提升层级背景
+  --bg-overlay: var(--theme-color-2); // 遮罩层背景
+  --bg-disabled: var(--color-black-alpha-8); // 禁用背景
+
+  // 4. 边框颜色
+  --border-color: #e4e4e7; // 默认边框
+  --border-primary: var(--border-color-2); // 主色边框
+  --border-secondary: #52525b; // 次要边框
+
+  // 5. 状态颜色
+  --state-hover: var(--color-black-alpha-7); // 悬浮状态
+  --state-active: var(--color-black-alpha-5); // 激活状态
+  --state-selected: var(--color-black-alpha-6); // 选中状态
+
+  // 6. 组件特定颜色
+  --ui-input-bg: var(--bg-base); // 输入框背景
+  --ui-modal-bg: #f8fafc; // 模态框背景
+  --ui-modal-border: rgba(102, 102, 102, 0.35); // 模态框边框
+  --ui-border-box-shadow: var(--color-black-alpha-5); // 边框
+  --ui-placeholder-color: var(--color-black-alpha-4); // 占位符颜色
+
+  // 7. 交互元素颜色
+  --interactive-default: var(--text-secondary); // 默认状态
+  --interactive-hover: var(--text-primary); // 悬浮状态
+  --interactive-active: var(--text-primary); // 激活状态
+  --interactive-bg-default: var(--bg-primary); // 默认状态
+  --interactive-bg-hover: var(--color-black-alpha-8); // 悬浮状态
+  --interactive-bg-active: var(--color-black-alpha-7); // 激活状态
+
+  --interactive-bg-default-1: #27272a; // 默认状态
+  --interactive-bg-hover-1: var(--color-black-alpha-7); // 悬浮状态
+  --interactive-bg-active-1: var(--color-black-alpha-6); // 激活状态
 
   --scrollbar-thumb: rgba(193, 193, 193, 0.6);
   --scrollbar-thumb-hover: rgba(168, 168, 168, 0.75);
-
-  --rss-bg-color: rgba(246, 246, 252, 0.7);
-  --rss-head-shadow-color: #888;
-  // --rss-card-title-color: ;
-  --rss-card-description-color: #5f6973;
-  --rss-card-foot-color: #4c5258;
-  --rss-card-bg-color: var(--color-white-alpha-1);
-  // --rss-card-bg-color-hover: ;
 }
 
 @mixin dark() {
-  --main-bg-color: #242424;
-  --main-color: rgba(255, 255, 255, 0.85);
-  --border-color-3: #4b4d52;
+  // 主题模式变量
+  // 1. 基础色板
+  // --color-primary: #1a73e8; // 主色
+  // --color-secondary: #5f6368; // 次要色
+  // --color-accent: #1967d2; // 强调色
 
-  --scrollbar-thumb: rgba(104, 104, 104, 0.5);
-  --scrollbar-thumb-hover: rgba(123, 123, 123, 0.65);
+  // 2. 文本颜色
+  --text-primary: var(--color-white); // 主要文本
+  --text-secondary: #a1a1aa; // 次要文本
+  --text-disabled: var(--color-white-alpha-4); // 禁用文本
+  --text-inverse: var(--color-black); // 反色文本
+  --text-color-2: #4c5258;
 
-  --rss-bg-color: rgba(53, 68, 90, 0.5);
-  --rss-head-shadow-color: #000;
-  --rss-card-title-color: #38bdf8;
-  --rss-card-description-color: #94a3b8;
-  --rss-card-foot-color: #e2e8f0;
-  --rss-card-bg-color: var(--color-black-alpha-4);
-  --rss-card-bg-color-hover: var(--color-black-alpha-6);
+  // 3. 背景颜色
+  --bg-base: #101011; // 基础背景
+  --bg-primary: var(--color-black); // 主色背景
+  --bg-secondary: var(--color-black-alpha-3); // 提升层级背景
+  --bg-overlay: var(--theme-color-2); // 遮罩层背景
+  --bg-disabled: var(--color-white-alpha-8); // 禁用背景
+
+  // 4. 边框颜色
+  --border-color: #242424; // 默认边框
+  --border-primary: var(--border-color-2); // 主色边框
+  --border-secondary: #52525b; // 次要边框
+
+  // 5. 状态颜色
+  --state-hover: var(--color-white-alpha-7); // 悬浮状态
+  --state-active: var(--color-white-alpha-5); // 激活状态
+  --state-selected: var(--color-white-alpha-6); // 选中状态
+
+  // 6. 组件特定颜色
+  --ui-input-bg: #141415; // 输入框背景
+  --ui-modal-bg: #1f1f22; // 模态框背景
+  --ui-modal-border: rgba(102, 102, 102, 0.35); // 模态框边框
+  --ui-border-box-shadow: var(--color-white-alpha-5); // 边框
+  --ui-placeholder-color: var(--color-white-alpha-4); // 占位符颜色
+
+  // 7. 交互元素颜色
+  --interactive-default: var(--text-secondary); // 默认状态
+  --interactive-hover: var(--text-primary); // 悬浮状态
+  --interactive-active: var(--text-primary); // 激活状态
+  --interactive-bg-default: #27272a; // 默认状态
+  --interactive-bg-hover: var(--color-white-alpha-7); // 悬浮状态
+  --interactive-bg-active: var(--color-black-alpha-3); // 激活状态
+
+  --interactive-bg-default-1: #27272a; // 默认状态
+  --interactive-bg-hover-1: #262626; // 悬浮状态
+  --interactive-bg-active-1: #3f3f46; // 激活状态
+
+  // --scrollbar-thumb: rgba(104, 104, 104, 0.5);
+  // --scrollbar-thumb-hover: rgba(123, 123, 123, 0.65);
 }
