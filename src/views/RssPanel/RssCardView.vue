@@ -94,7 +94,7 @@ const clickPause = () => {
     transition: background-color 0.3s 0.15s;
 
     &:hover {
-      background-color: var(--origin-theme-bg-hover);
+      background-color: var(--origin-theme-bg-hover, var(--interactive-bg-hover));
       transition-duration: 0s;
       transition-delay: 0s;
     }
