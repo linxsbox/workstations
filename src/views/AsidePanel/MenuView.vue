@@ -11,10 +11,15 @@ const handleSwitchMenuItem = (panel) => {
 
 <template>
   <div class="menu-box flex flex-col gap-3">
-    <button class="aside-menu-button bg-transparent inline-flex gap-2 py-2 px-4 cursor-pointer rounded-md" type="button"
-      :class="{ active: getActiveMenuId === item.id }" :key="item.id" v-for="item in getMenuItems"
-      @click="handleSwitchMenuItem(item.panel)">
-      <div class="menu-icon"></div>
+    <button
+      class="aside-menu-button inline-flex items-center gap-2 py-2 px-4 cursor-pointer rounded-md"
+      v-for="item in getMenuItems"
+      :class="{ active: getActiveMenuId === item.id }"
+      :key="item.id"
+      type="button"
+      @click="handleSwitchMenuItem(item.panel)"
+    >
+      <component class="menu-icon text-base" :is="item.icon" />
       <div class="menu-label">{{ item.label }}</div>
     </button>
   </div>
@@ -23,6 +28,7 @@ const handleSwitchMenuItem = (panel) => {
 <style lang="scss" scoped>
 .aside-menu-button {
   color: var(--text-primary);
+  background-color: transparent;
   transition: background-color 0.2s ease;
 
   &:hover {
