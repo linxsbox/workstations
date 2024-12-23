@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { localStorage } from "@linxs/toolkit";
-import { rssGroupType } from "../config";
 import { SettingSectionEnum } from "./config";
 
 const STORAGE_KEY = "USER_RSS_ACTIVE";
@@ -16,7 +15,6 @@ const storedFontSize = localStorage.get(STORAGE_KEYS.FONT_SIZE);
 export const storeSettings = defineStore({
   id: "StoreSettings",
   state: () => ({
-    rssTypeActive: localStorage.get(STORAGE_KEY) || rssGroupType.xiaoyuzhoufm,
     showSettingDialog: false,
     activeSettingSection: SettingSectionEnum.GENERAL,
     // 主题设置：system(跟随系统), dark(深色), light(明亮)
@@ -26,7 +24,6 @@ export const storeSettings = defineStore({
   }),
 
   getters: {
-    getRssTypeActive: (state) => state.rssTypeActive,
     isDarkMode() {
       if (this.themeMode === "system") {
         return getPrefersTheme();
@@ -39,8 +36,6 @@ export const storeSettings = defineStore({
     init() {},
     setRssTypeActive(key) {
       if (!key) return;
-
-      this.rssTypeActive = key;
       localStorage.set(STORAGE_KEY, key);
     },
 

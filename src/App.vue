@@ -9,15 +9,12 @@ import AddRssDialog from "./views/SettingDialog/AddRssDialog.vue";
 
 import { storeRss } from "@/stores/storeRss/index";
 import { storeSettings } from "@/stores/storeSettings/index";
-import { rssGroupType } from "@/stores/config";
 import { onMounted } from "vue";
 
 const storeRssInstance = storeRss();
-const { getRssList } = storeToRefs(storeRssInstance);
 storeRssInstance.init();
 
 const storeSettingsInstance = storeSettings();
-const { getRssTypeActive } = storeToRefs(storeSettingsInstance);
 
 onMounted(() => {
   storeSettingsInstance.initializeSettings();

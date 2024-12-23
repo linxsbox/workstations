@@ -1,5 +1,6 @@
 <script setup>
 import SearchBox from "./SearchBox.vue";
+import IconSettings from "@/components/Icons/IconSettings.vue";
 import { storeSettings } from "@/stores/storeSettings";
 import { SettingSectionEnum } from "@/stores/storeSettings/config";
 
@@ -12,18 +13,25 @@ const store = storeSettings();
       <SearchBox></SearchBox>
     </div>
     <div class="setting-box inline-flex justify-end gap-4 w-1/4">
-      <button class="bg-transparent px-2 rounded-md" type="button">
+      <button
+        class="flex justify-center items-center gap-1 bg-transparent px-2 rounded-md"
+        type="button"
+      >
         笔记
       </button>
-      <button class="bg-transparent px-2 rounded-md" type="button">
+      <button
+        class="flex justify-center items-center gap-1 bg-transparent px-2 rounded-md"
+        type="button"
+      >
         深色
       </button>
       <button
-        class="bg-transparent px-2 rounded-md"
+        class="flex justify-center items-center gap-1 bg-transparent px-2 rounded-md"
         type="button"
         @click="store.openSetting(SettingSectionEnum.GENERAL)"
       >
-        设置
+        <IconSettings />
+        <span>设置</span>
       </button>
     </div>
   </header>

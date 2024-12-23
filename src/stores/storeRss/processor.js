@@ -133,7 +133,7 @@ class XiaoyuzhouProcessor extends BaseRssProcessor {
   async fetchSourceInfo() {
     // 小宇宙解析内容规则
     const jsonMathc =
-      /<script\s+id="__NEXT_DATA__"\s+type="application\/json">\s*([\s\S]+)\s*<\/script>/;
+      /<script\s+id="__NEXT_DATA__"\s+type="application\/json">\s*([\s\S]+?)\s*<\/script>/;
 
     // 记录服务器时间
     let serverTime = 0;
@@ -325,10 +325,15 @@ const getRssLogo = async (rssId, ImageUrl) => {
 
 // 获取发布时间
 const getPubDate = (startTime, endTime) => {
-  const { days, hours, minutes, seconds } = calculateTimeDifference(
-    startTime,
-    endTime
-  );
+  if (startTime.includes("T")) {
+    startTime = new Date(startTime).getTime();
+  }
+  const {
+    d: days,
+    h: hours,
+    m: minutes,
+    s: seconds,
+  } = calculateTimeDifference(startTime, endTime);
 
   if (!days && !hours && !minutes && seconds) {
     return `${seconds} 秒前`;
