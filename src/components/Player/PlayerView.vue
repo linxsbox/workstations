@@ -1,8 +1,8 @@
 <script setup>
-import { eventListener, isValidNumber } from "@linxs/toolkit";
+import { eventListener, isObject, isValidNumber } from "@linxs/toolkit";
 import PlayButton from "../PlayButton/PlayButton.vue";
 import { storePlayer } from "@/stores/storePlayer";
-import { formatPlayTime, PlayerProgressDnD } from "./config";
+import { formatPlayTime, PlayerProgressDnD, updateMediaCover } from "./config";
 
 const props = defineProps({
   isBackRate: { type: Boolean, default: true },
@@ -76,9 +76,10 @@ const setProgressBarTransitionWidth = (width = 0) => {
  */
 const setCurrentStateProgressWidth = (width = 0, remainingTime, event = "") => {
   const style = [
-    `width:${isValidNumber(width)
-      ? width
-      : getIsPlaying.value
+    `width:${
+      isValidNumber(width)
+        ? width
+        : getIsPlaying.value
         ? (playerProgress.value || {}).offsetWidth || 0
         : getCurrentProgressBar().offsetWidth
     }px`,
@@ -154,7 +155,10 @@ const setupAudioEvents = () => {
   });
 
   // 播放结束
-  audioEvents.ended = eventListener(audio.value, "ended", () => { });
+  audioEvents.ended = eventListener(audio.value, "ended", () => {
+    // 触发状态切换
+    store.pause();
+  });
 
   audioEvents.error = eventListener(audio.value, "error", () => {
     store.setError();
@@ -210,16 +214,16 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   // cleanup all audio events
-  Object.keys(audioEvents).forEach(key => {
-    audioEvents[key]()
+  Object.keys(audioEvents).forEach((key) => {
+    audioEvents[key]();
   });
 });
 
 // 切换播放速率
 const handleChangePlaybackRate = () => {
   backRate.value = backRate.value === 1 ? 2 : 1;
-  audio.value.playbackRate = backRate.value
-}
+  audio.value.playbackRate = backRate.value;
+};
 
 // 进度条拖动
 const handleProgressDnD = (e) => {
@@ -237,7 +241,8 @@ const handleJumpProgress = (event) => {
   setProgressBarTransitionWidth(event.offsetX);
 
   nextTick(() => {
-    getIsPlaying.value && setCurrentStateProgressWidth(null, remainingTime, "jump trigger");
+    getIsPlaying.value &&
+      setCurrentStateProgressWidth(null, remainingTime, "jump trigger");
     setCurrentPleyTime(currentTime);
     isJumpProgress.value = false;
   });
@@ -297,6 +302,20 @@ watch(
       getPlayStatus.value.isLoading = true;
 
       setProgressBarTransitionWidth(0);
+
+      const album = getPlayStatus.value.album;
+      const isAlbumInfo = album && isObject(album);
+      if (isAlbumInfo) {
+        if (album.image) {
+          updateMediaCover(
+            getPlayStatus.value.album,
+            getPlayStatus.value.title
+          );
+        }
+        if (isObject(album.theme) && album.theme.color) {
+          setThemeStyle(album.theme);
+        }
+      }
     }
   }
 );
@@ -312,15 +331,30 @@ watch(
     }
   }
 );
+
+const themeStyle = ref({});
+const setThemeStyle = (theme) => {
+  themeStyle.value = {
+    "--player-color": theme.color,
+    "--play-button-bg-color": theme.rgb,
+    "--player-progress-slider": `rgba(${theme.rgb}, 0.6)`,
+  };
+};
 </script>
 
 <template>
-  <div ref="playerBox" class="player-box select-none">
+  <div ref="playerBox" class="player-box select-none" :style="themeStyle">
     <div class="player-control-bar">
       <div class="player-play-bar">
         <!-- <div class="play-prev" @click="handleChangeAudioSrc(-1)">上一首</div> -->
-        <PlayButton ref="playButton" class="play-button" @play="handleChangePlayState(true, true)"
-          @pause="handleChangePlayState(false, true)" :isPlay="getIsPlaying" :isDisabled="!getIsPlayerEnable" />
+        <PlayButton
+          ref="playButton"
+          class="play-button"
+          @play="handleChangePlayState(true, true)"
+          @pause="handleChangePlayState(false, true)"
+          :isPlay="getIsPlaying"
+          :isDisabled="!getIsPlayerEnable"
+        />
         <!-- <div class="play-next" @click="handleChangeAudioSrc(1)">下一首</div> -->
       </div>
       <div class="player-status-bar">
@@ -329,7 +363,11 @@ watch(
           <div class="volume-range" v-if="isVolume">
           </div>
         </div> -->
-        <div class="palyer-back-rate" @click="handleChangePlaybackRate" v-if="isBackRate">
+        <div
+          class="palyer-back-rate"
+          @click="handleChangePlaybackRate"
+          v-if="isBackRate"
+        >
           {{ backRate === 1 ? "1.x" : "2.x" }}
         </div>
       </div>
@@ -342,7 +380,11 @@ watch(
       <div class="current-time text-left">
         {{ currentTimeFormatted || "00:00" }}
       </div>
-      <div ref="playerProgress" class="player-progress" @click.self="handleJumpProgress">
+      <div
+        ref="playerProgress"
+        class="player-progress"
+        @click.self="handleJumpProgress"
+      >
         <div class="progress-bar" :style="progressBarTransition">
           <div class="progress-slider" @mousedown="handleProgressDnD"></div>
         </div>
@@ -358,8 +400,8 @@ watch(
 
 <style lang="scss" scoped>
 .player-box {
-  --player-color: #409eff;
-  --play-button-bg-color: 64, 158, 255;
+  --player-color-default: #409eff;
+  --play-button-bg-color-default: 64, 158, 255;
   --player-bg-default: #fff;
   --player-border-defult: none;
   --player-border-radius-defult: none;
@@ -371,10 +413,12 @@ watch(
   flex-direction: column;
   gap: 8px;
   padding: 10px;
-  background-color: var(--player-bg, var(--player-bg-default));
+  background-color: var(--player-bg);
   border: var(--player-border, var(--player-border-defult));
-  border-radius: var(--player-border-radius,
-      var(--player-border-radius-defult));
+  border-radius: var(
+    --player-border-radius,
+    var(--player-border-radius-defult)
+  );
 
   .player-control-bar {
     display: flex;
@@ -393,12 +437,12 @@ watch(
 
     .play-button {
       font-size: 36px;
-      color: var(--player-color);
+      color: var(--player-color, var(--player-color-default));
     }
 
     .play-prev,
     .play-next {
-      color: var(--player-color);
+      color: var(--player-color, var(--player-color-default));
     }
   }
 
@@ -412,8 +456,11 @@ watch(
       padding: 4px;
       font-size: 12px;
       line-height: 16px;
-      color: var(--player-color);
-      background-color: rgba(var(--play-button-bg-color), 0.1);
+      color: var(--player-color, var(--player-color-default));
+      background-color: rgba(
+        var(--play-button-bg-color, var(--play-button-bg-color-default)),
+        0.1
+      );
       border-radius: 999px;
       cursor: pointer;
     }
@@ -438,16 +485,20 @@ watch(
     flex: 1 1 0%;
     width: 100%;
     height: 8px;
-    background-color: var(--player-progress-slider-bar,
-        var(--player-progress-slider-bar-default));
+    background-color: var(
+      --player-progress-slider-bar,
+      var(--player-progress-slider-bar-default)
+    );
     border-radius: 999px;
     will-change: auto;
 
     .progress-bar {
       width: 0px;
       height: inherit;
-      background-color: var(--player-progress-slider,
-          var(--player-progress-slider-default));
+      background-color: var(
+        --player-progress-slider,
+        var(--player-progress-slider-default)
+      );
       border-radius: inherit;
       transform: translateZ(0);
       pointer-events: none;
@@ -462,8 +513,10 @@ watch(
       align-items: center;
       width: 16px;
       height: 16px;
-      background-color: var(--player-progress-slider-bg,
-          var(--player-progress-slider-bg-default));
+      background-color: var(
+        --player-progress-slider-bg,
+        var(--player-progress-slider-bg-default)
+      );
       border-radius: inherit;
       box-shadow: 0 0 3px 0 rgb(0, 0, 0, 0.35);
       pointer-events: auto;
@@ -473,8 +526,10 @@ watch(
         flex: none;
         width: 8px;
         height: 8px;
-        background-color: var(--player-progress-slider,
-            var(--player-progress-slider-default));
+        background-color: var(
+          --player-progress-slider,
+          var(--player-progress-slider-default)
+        );
         border-radius: inherit;
         box-shadow: 0 1px 1px 0 rgb(0, 0, 0, 0.35);
       }

@@ -1,8 +1,9 @@
 import {
   isString,
   isDate,
-  calculateTimeDifference,
   localStorage,
+  calculateTimeDifference,
+  genISOWithZoneToDate,
   image2Base64,
   hex2rgb,
   parseXML,
@@ -189,8 +190,9 @@ class XiaoyuzhouProcessor extends BaseRssProcessor {
         description: brief,
         author,
         image: imgBase64,
-        theme: { original: color.original, rgb: `${r}, ${g}, ${b}` },
+        theme: { color: color.original, rgb: `${r}, ${g}, ${b}` },
         list,
+        lastUpdateTime: genISOWithZoneToDate().getTime(),
       };
     } catch (error) {
       console.error("小宇宙播客信息获取失败:", error);
@@ -235,6 +237,7 @@ class Kr36Processor extends BaseRssProcessor {
         title: this.source.name,
         link: this.source.url,
         list,
+        lastUpdateTime: genISOWithZoneToDate().getTime(),
       };
     } catch (error) {
       console.error("36Kr RSS 获取失败:", error);

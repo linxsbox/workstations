@@ -1,5 +1,6 @@
 import { eventListener, s2DHMS, PubSub } from "@linxs/toolkit";
 
+// 格式化播放时间
 export const formatPlayTime = (seconds = 0) => {
   if (!seconds) return "00:00:00";
   const { h, m, s } = s2DHMS(seconds);
@@ -176,3 +177,17 @@ export class PlayerProgressDnD extends PubSub {
     this.#disabled = value;
   }
 }
+
+// 更新媒体封面
+export const updateMediaCover = (album = {}, title) => {
+  if ("mediaSession" in navigator) {
+    if (!album || !album.image) return;
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: title,
+      artist: album.author,
+      album: album.albumTitle,
+      artwork: [{ src: album.image, sizes: "300x300", type: "image/jpeg" }],
+    });
+  }
+};
