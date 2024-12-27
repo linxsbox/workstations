@@ -38,6 +38,7 @@
   --color-error: #ea4335; // 错误
   --color-bg-error: rgba(234, 68, 53, 0.25); // 错误
   --color-bg-error-hover: rgba(234, 68, 53, 0.5); // 错误
+  --color-bg-error-focus: rgba(234, 68, 53, 0.1); // 错误
 }
 
 @mixin light() {
@@ -57,6 +58,7 @@
   // 3. 背景颜色
   --bg-base: #f4f4f5; // 基础背景
   --bg-primary: var(--color-white); // 主色背景
+  --bg-primary-inverse: var(--color-black); // 反色主色背景
   --bg-secondary: var(--color-white-alpha-3); // 提升层级背景
   --bg-overlay: var(--theme-color-2); // 遮罩层背景
   --bg-disabled: var(--color-black-alpha-8); // 禁用背景
@@ -72,7 +74,7 @@
   --state-selected: var(--color-black-alpha-6); // 选中状态
 
   // 6. UI 组件特定颜色
-  --ui-input-bg: var(--bg-base); // 输入框背景
+  --ui-common-bg: var(--bg-base); // 输入框背景
   --ui-drawer-bg: var(--color-white); // 抽屉组件背景
   --ui-modal-bg: #f8fafc; // 模态框背景
   --ui-modal-border: rgba(102, 102, 102, 0.35); // 模态框边框
@@ -112,6 +114,7 @@
   // 3. 背景颜色
   --bg-base: #101011; // 基础背景
   --bg-primary: var(--color-black); // 主色背景
+  --bg-primary-inverse: var(--color-white); // 主色背景
   --bg-secondary: var(--color-black-alpha-3); // 提升层级背景
   --bg-overlay: var(--theme-color-2); // 遮罩层背景
   --bg-disabled: var(--color-white-alpha-8); // 禁用背景
@@ -127,7 +130,7 @@
   --state-selected: var(--color-white-alpha-6); // 选中状态
 
   // 6. UI 组件特定颜色
-  --ui-input-bg: #141415; // 输入框背景
+  --ui-common-bg: #141415; // 输入框背景
   --ui-drawer-bg: var(--color-black); // 抽屉组件背景
   --ui-modal-bg: #1f1f22; // 模态框背景
   --ui-modal-border: rgba(102, 102, 102, 0.35); // 模态框边框

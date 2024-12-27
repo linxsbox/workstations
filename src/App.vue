@@ -5,7 +5,7 @@ import { themeOverrides } from "./theme/index.js";
 import MainPanelView from "./views/MainPanel/MainPanelView.vue";
 import AsidePanelView from "./views/AsidePanel/AsidePanelView.vue";
 import SettingDialog from "./views/SettingDialog/SettingDialog.vue";
-import AddRssDialog from "./views/SettingDialog/AddRssDialog.vue";
+import RssManagementDialog from "./views/RssManagementDialog/RssManagementDialog.vue";
 
 import { storeRss } from "@/stores/storeRss/index";
 import { storeSettings } from "@/stores/storeSettings/index";
@@ -28,7 +28,7 @@ onMounted(() => {
       <MainPanelView />
 
       <SettingDialog />
-      <AddRssDialog />
+      <RssManagementDialog />
     </NMessageProvider>
   </NConfigProvider>
 </template>

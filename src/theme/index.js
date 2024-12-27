@@ -25,6 +25,7 @@ export const themeOverrides = {
     textColor: "var(--text-primary)", // 字体颜色
     // textColorDisabled: "var(--text-disabled)", // 字体禁用颜色
     // textColorPrimary: "var(--text-primary)", // 字体颜色
+    border: "1px solid var(--ui-border-box-shadow)", // 边框
     textColorError: "var(--color-error)", // type error 字体颜色
     colorError: "var(--color-bg-error)",
     colorHoverError: "var(--color-bg-error-hover)",
@@ -34,8 +35,10 @@ export const themeOverrides = {
   Input: {
     textColor: "var(--text-primary)", // 字体颜色
     textColorDisabled: "var(--text-disabled)", // 字体禁用颜色
-    color: "var(--ui-input-bg)", // 背景色
+    color: "var(--ui-common-bg)", // 背景色
     colorFocus: "var(--bg-primary)", // 焦点背景色
+    colorFocusWarning: "var(--bg-primary)", // 焦点背景色
+    colorFocusError: "var(--color-bg-error-focus)", // 焦点背景色
     colorDisabled: "var(--bg-disabled)", // 禁用背景色
     border: "1px solid var(--ui-border-box-shadow)", // 边框
     borderDisabled: "1px solid var(--ui-border-box-shadow)", // 边框禁用
@@ -45,7 +48,7 @@ export const themeOverrides = {
   InternalSelection: {
     textColor: "var(--text-primary)", // 字体颜色
     textColorDisabled: "var(--text-disabled)", // 字体禁用颜色
-    color: "var(--ui-input-bg)", // 背景色
+    color: "var(--ui-common-bg)", // 背景色
     colorActive: "var(--bg-primary)", // 点击背景色
     colorDisabled: "var(--bg-disabled)", // 禁用背景色
     border: "1px solid var(--ui-border-box-shadow)", // 边框
@@ -63,6 +66,7 @@ export const themeOverrides = {
   // Menu: {},
   // Tooltip: {},
   Radio: {
+    color: "var(--ui-common-bg)", // 背景色
     textColor: "var(--interactive-default)", // 字体颜色
     colorDisabled: "var(--bg-disabled)", // 字体禁用颜色
     dotColorDisabled: "var(--ui-border-box-shadow)", // 选中时内部背景色
@@ -70,11 +74,16 @@ export const themeOverrides = {
     boxShadowDisabled: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
   },
   Checkbox: {
+    color: "var(--ui-common-bg)", // 背景色
     textColor: "var(--interactive-default)", // 字体颜色
     colorDisabled: "var(--bg-disabled)", // 字体禁用颜色
     dotColorDisabled: "var(--ui-border-box-shadow)", // 选中时内部背景色
-    boxShadow: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
-    boxShadowDisabled: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
+    // boxShadow: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
+    // boxShadowDisabled: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
+    border: "1px solid var(--ui-border-box-shadow)", // 边框
+  },
+  Form: {
+    labelTextColor: "var(--text-primary)",
   },
   Card: {
     textColor: "var(--text-secondary)", // 字体颜色
@@ -90,11 +99,19 @@ export const themeOverrides = {
   Drawer: {
     color: "var(--ui-drawer-bg)",
     textColor: "var(--text-secondary)",
-    titleTextColor: "var(--text-primary)",
+    titleTextColor: "var(--text-primary)", // 字体颜色
   },
   DrawerContent: {
-    textColor: "var(--text-secondary)",
+    textColor: "var(--text-secondary)", // 字体颜色
   },
   // NDrawerContent
-  // Tag: {},
+  Tag: {
+    colorBordered: "var(--ui-common-bg)", // 背景色
+    textColor: "var(--text-primary)", // 字体颜色
+    border: "1px solid var(--ui-border-box-shadow)", // 边框
+    borderRadius: "var(--border-radius)",
+  },
+  Divider: {
+    color: "var(--ui-border-box-shadow)", // 线条颜色
+  },
 };

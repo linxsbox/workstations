@@ -1,10 +1,9 @@
 <script setup>
 import {
-  NModal,
   NForm,
   NFormItem,
-  NInput,
   NButton,
+  NInput,
   NRadioGroup,
   NRadio,
   NCheckbox,
@@ -214,85 +213,85 @@ const submitSuccessSwitchTab = (tabId) => {
   storeTab().switchTab(DEFAULT_PANEL, tabId);
   store.switchSourceData(tabId);
 };
+
+defineExpose({
+  handleConfirm,
+  handleCancel,
+});
 </script>
 
 <template>
-  <NModal
-    v-model:show="store.showAddDialog"
-    :mask-closable="false"
-    preset="card"
-    title="添加 RSS 源"
-    class="w-[500px]"
-    @positive-click="handleConfirm"
-    @negative-click="handleCancel"
-  >
-    <NForm
-      ref="formRef"
-      :model="formValue"
-      :rules="rules"
-      label-placement="left"
-      label-width="80"
-      require-mark-placement="right-hanging"
-    >
-      <NFormItem label="源类型" path="type">
-        <NRadioGroup
-          class="flex gap-4"
-          v-model:value="formValue.type"
-          @update:value="handleTypeChange"
-        >
-          <NRadio
-            v-for="item in RSS_SOURCE_TYPES"
-            :key="item.value"
-            :value="item.value"
+  <section class="add-rss-section">
+    <h2 class="mb-4 text-lg font-bold text-[var(--text-primary)]">
+      添加订阅源
+    </h2>
+    <div class="add-rss-item pr-4 mb-6">
+      <NForm
+        ref="formRef"
+        :model="formValue"
+        :rules="rules"
+        label-placement="left"
+        label-width="80"
+        require-mark-placement="right-hanging"
+      >
+        <NFormItem label="源类型" path="type">
+          <NRadioGroup
+            class="flex gap-4"
+            v-model:value="formValue.type"
+            @update:value="handleTypeChange"
           >
-            {{ item.label }}
-          </NRadio>
-        </NRadioGroup>
-      </NFormItem>
+            <NRadio
+              v-for="item in RSS_SOURCE_TYPES"
+              :key="item.value"
+              :value="item.value"
+            >
+              {{ item.label }}
+            </NRadio>
+          </NRadioGroup>
+        </NFormItem>
 
-      <NFormItem v-if="showNameField" label="名称" path="name">
-        <NInput v-model:value="formValue.name" placeholder="请输入源名称" />
-      </NFormItem>
+        <NFormItem v-if="showNameField" label="名称" path="name">
+          <NInput v-model:value="formValue.name" placeholder="请输入源名称" />
+        </NFormItem>
 
-      <NFormItem v-if="showUrlField" label="URL" path="url">
-        <NInput
-          v-model:value="formValue.sourceUrl"
-          :placeholder="
-            formValue.type === RssSourceTypeEnum.XIAOYUZHOU
-              ? '请输入小宇宙频道地址（Url）'
-              : '请输入 RSS 源地址'
-          "
-        />
-      </NFormItem>
+        <NFormItem v-if="showUrlField" label="URL" path="url">
+          <NInput
+            v-model:value="formValue.sourceUrl"
+            :placeholder="
+              formValue.type === RssSourceTypeEnum.XIAOYUZHOU
+                ? '请输入小宇宙频道地址（Url）'
+                : '请输入 RSS 源地址'
+            "
+          />
+        </NFormItem>
 
-      <NFormItem v-if="showKr36Select" label="选择源" path="kr36Selected">
-        <NCheckboxGroup
-          class="flex flex-wrap gap-4"
-          v-model:value="formValue.kr36Selected"
-        >
-          <NCheckbox
-            v-for="option in KR36_RSS_OPTIONS"
-            :key="option.value"
-            :value="option.value"
+        <NFormItem v-if="showKr36Select" label="选择源" path="kr36Selected">
+          <NCheckboxGroup
+            class="flex flex-wrap gap-4"
+            v-model:value="formValue.kr36Selected"
           >
-            {{ option.label }}
-          </NCheckbox>
-        </NCheckboxGroup>
-      </NFormItem>
+            <NCheckbox
+              v-for="option in KR36_RSS_OPTIONS"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </NCheckbox>
+          </NCheckboxGroup>
+        </NFormItem>
 
-      <NFormItem v-if="showSearchField" label="公众号" path="searchQuery">
-        <NInput
-          v-model:value="formValue.searchQuery"
-          placeholder="请输入公众号名称搜索"
-        />
-      </NFormItem>
-    </NForm>
+        <NFormItem v-if="showSearchField" label="公众号" path="searchQuery">
+          <NInput
+            v-model:value="formValue.searchQuery"
+            placeholder="请输入公众号名称搜索"
+          />
+        </NFormItem>
 
-    <template #footer>
-      <div class="flex justify-end gap-4">
-        <NButton @click="handleCancel">取消</NButton>
-        <NButton @click="handleConfirm" type="primary">添加</NButton>
-      </div>
-    </template>
-  </NModal>
+        <div class="flex justify-end gap-4">
+          <NButton @click="handleCancel">取消</NButton>
+          <NButton @click="handleConfirm" type="primary">添加</NButton>
+        </div>
+      </NForm>
+    </div>
+  </section>
 </template>

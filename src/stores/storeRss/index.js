@@ -85,10 +85,14 @@ export const storeRss = defineStore({
     // 删除 RSS 源
     removeSource(sourceId) {
       const index = this.sources.findIndex((s) => s.id === sourceId);
-      if (index !== -1) {
-        this.sources.splice(index, 1);
-        this.saveSources();
-      }
+      if (index === -1) return;
+
+      this.sources.splice(index, 1);
+      this.saveSources();
+
+      // 触发当前列表更新
+      const tab = storeTab();
+      this.switchSourceData(tab.getActiveTabId("rss"));
     },
 
     // 更新 RSS 源

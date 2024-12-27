@@ -8,7 +8,7 @@ export const toolsList = [
     ),
     component: markRaw(
       defineAsyncComponent(() =>
-        import("./components/StockTradingCalculator/Index.vue")
+        import("./components/StockTradingCalculator/CalculatorView.vue")
       )
     ),
   },
