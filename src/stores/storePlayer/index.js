@@ -11,9 +11,10 @@ export const storePlayer = defineStore("player", {
       isPlaying: false, // 播放状态
       isLoading: false, // 音频加载状态
       src: "", // 当前播放的音频源
-      title: "",
-      color: "",
-      rgb: "",
+      title: "", // 当前播放的音频标题
+      pid: "", // 源 id
+      // pid|author|title|albumTitle|image|theme
+      album: null, // 专辑信息 (可选)
     },
     // 播放列表
     playlist: [],
@@ -37,8 +38,12 @@ export const storePlayer = defineStore("player", {
         this.playStatus.isPlaying = false; // 播放失败
         return;
       }
+
       this.playStatus.src = audio.src;
       this.playStatus.title = audio.title;
+      this.playStatus.pid = audio.pid;
+      this.playStatus.album = audio.album;
+
       this.playStatus.isPlaying = true;
       this.playStatus.isError = false; // 重置错误状态
     },

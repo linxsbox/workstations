@@ -71,7 +71,7 @@
   --state-active: var(--color-black-alpha-5); // 激活状态
   --state-selected: var(--color-black-alpha-6); // 选中状态
 
-  // 6. 组件特定颜色
+  // 6. UI 组件特定颜色
   --ui-input-bg: var(--bg-base); // 输入框背景
   --ui-drawer-bg: var(--color-white); // 抽屉组件背景
   --ui-modal-bg: #f8fafc; // 模态框背景
@@ -107,7 +107,7 @@
   --text-secondary: #a1a1aa; // 次要文本
   --text-disabled: var(--color-white-alpha-4); // 禁用文本
   --text-inverse: var(--color-black); // 反色文本
-  --text-color-2: #4c5258;
+  --text-color-2: #80909e;
 
   // 3. 背景颜色
   --bg-base: #101011; // 基础背景
@@ -126,7 +126,7 @@
   --state-active: var(--color-white-alpha-5); // 激活状态
   --state-selected: var(--color-white-alpha-6); // 选中状态
 
-  // 6. 组件特定颜色
+  // 6. UI 组件特定颜色
   --ui-input-bg: #141415; // 输入框背景
   --ui-drawer-bg: var(--color-black); // 抽屉组件背景
   --ui-modal-bg: #1f1f22; // 模态框背景

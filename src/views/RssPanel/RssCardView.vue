@@ -1,6 +1,6 @@
 <script setup>
+import { isObject, isEmptyObject } from "@linxs/toolkit";
 import PlayButton from "@/components/PlayButton/PlayButton.vue";
-// import PlayButton from "@/components/PlayButton/PlayButton.optimized.vue";
 import { storePlayer } from "@/stores/storePlayer";
 
 const props = defineProps({
@@ -9,12 +9,20 @@ const props = defineProps({
     required: true,
     default: () => ({}),
   },
+  pid: {
+    type: String,
+    default: "",
+  },
+  album: {
+    type: [Object, null],
+    default: null,
+  },
 });
 
 const store = storePlayer();
 const { getPlayStatus } = storeToRefs(store);
 
-onMounted(() => { });
+onMounted(() => {});
 
 const isPlay = computed(() => {
   return (
@@ -34,11 +42,17 @@ const clickPlay = () => {
     return;
   }
 
+  const isAlbum = () => {
+    if (!isObject(props.album)) return null;
+    if (isEmptyObject(props.album)) return null;
+    return props.album;
+  };
+
   store.play({
     title: props.data.title,
     src: props.data.mediaUrl,
-    color: '',
-    rgb: '',
+    album: isAlbum(),
+    pid: props.pid || "",
   });
 };
 const clickPause = () => {
@@ -50,13 +64,22 @@ const clickPause = () => {
   <section class="rss-card flex rounded-md">
     <div class="card-panel flex w-full h-full gap-3 p-2 rounded-md">
       <div class="left flex-none flex flex-col gap-4 pl-1">
-        <PlayButton class="text-4xl text-[var(--origin-theme)]" v-if="props.data.mediaUrl" @play="clickPlay"
-          @pause="clickPause" :isPlay="isPlay" />
+        <PlayButton
+          class="text-4xl text-[var(--origin-theme)]"
+          v-if="props.data.mediaUrl"
+          @play="clickPlay"
+          @pause="clickPause"
+          :isPlay="isPlay"
+        />
       </div>
       <div class="right flex-1 flex flex-col gap-1">
         <header class="card-header">
           <div class="title text-sm text-[var(--origin-theme)] font-bold">
-            <a :href="props.data.link" target="_blank" rel="noopener noreferrer">
+            <a
+              :href="props.data.link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {{ props.data.title }}
             </a>
           </div>
@@ -73,7 +96,10 @@ const clickPause = () => {
             <span v-if="props.data.duration">{{ props.data.duration }} ·</span>
             {{ props.data.timeAgo || "" }}
           </div>
-          <div class="flex gap-4 justify-between" v-else-if="props.data.author || props.data.pubDate">
+          <div
+            class="flex gap-4 justify-between"
+            v-else-if="props.data.author || props.data.pubDate"
+          >
             <div v-if="props.data.pubDate">{{ props.data.pubDate }}</div>
             <div v-if="props.data.author">{{ props.data.author }}</div>
           </div>
@@ -94,7 +120,10 @@ const clickPause = () => {
     transition: background-color 0.3s 0.15s;
 
     &:hover {
-      background-color: var(--origin-theme-bg-hover, var(--interactive-bg-hover));
+      background-color: var(
+        --origin-theme-bg-hover,
+        var(--interactive-bg-hover)
+      );
       transition-duration: 0s;
       transition-delay: 0s;
     }
@@ -102,6 +131,7 @@ const clickPause = () => {
 
   .description {
     color: var(--text-secondary);
+    overflow-wrap: anywhere;
   }
 
   .card-footer {
