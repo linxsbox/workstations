@@ -95,7 +95,9 @@ export const themeOverrides = {
     textColor: "var(--text-secondary)", // 字体颜色
     boxShadow: "0 0 0 1px var(--ui-border-box-shadow)", // 边框颜色
   },
-  // Dialog: {},
+  Dialog: {
+    textColor: "var(--text-secondary)",
+  },
   Drawer: {
     color: "var(--ui-drawer-bg)",
     textColor: "var(--text-secondary)",

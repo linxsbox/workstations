@@ -1,8 +1,9 @@
 <script setup>
-import { NButton, NTag, NPopconfirm, useMessage } from "naive-ui";
+import { NInput, NButton, NTag, NPopconfirm, useMessage } from "naive-ui";
 import IconClose from "@/components/Icons/IconClose.vue";
+import DataImportExport from "@/components/DataImportExportManager/DataImportExport.vue";
 import { storeRss } from "@/stores/storeRss";
-import { RSS_SOURCE_TYPES } from "@/stores/storeRss/config";
+import { RssSourceTypeEnum, RSS_SOURCE_TYPES } from "@/stores/storeRss/config";
 
 const store = storeRss();
 
@@ -32,6 +33,70 @@ const handleDeleteSource = (sourceId) => {
 // 获取主题颜色，如果有的情况
 const getThemeColor = (theme = null) => {
   return theme && theme.color ? { color: theme.color } : {};
+};
+
+// 显示导入对话框
+const showImportDialog = ref(false);
+const isImporting = ref(false);
+const isImportType = ref(0); // 0 导出 | 1 导入
+const importData = ref("");
+const exportJson = ref("");
+
+// 打开导入对话框
+const handleShowImportDialog = (type) => {
+  isImportType.value = type;
+  showImportDialog.value = true;
+
+  if (type === 0) {
+    const data = rssSources.value.reduce((prev, source) => {
+      const item = {
+        name: source.title,
+        sourceUrl: source.sourceUrl,
+        id: source.id,
+      };
+
+      if (prev[source.type]) {
+        prev[source.type].push(item);
+      } else {
+        prev[source.type] = [item];
+      }
+
+      return prev;
+    }, {});
+
+    exportJson.value = JSON.stringify(data, null, 2);
+  }
+};
+
+// 处理导入
+const handleImport = async () => {
+  try {
+    const data = JSON.parse(importData.value);
+    let lens = 0;
+    Object.keys(data).forEach((type) => {
+      data[type].forEach((item) => {
+        const isExist = rssSources.value.find(
+          (s) => s.sourceUrl === item.sourceUrl
+        );
+        if (!isExist) {
+          store.addSource({
+            id: item.id,
+            title: item.name,
+            sourceUrl: item.sourceUrl,
+            type: type,
+          });
+        } else {
+          lens++;
+        }
+      });
+    });
+
+    message.success(`导入成功，已排除${lens}条已有订阅源`);
+
+    showImportDialog.value = false;
+  } catch (error) {
+    message.error("数据格式错误，请检查");
+  }
 };
 </script>
 
@@ -84,6 +149,30 @@ const getThemeColor = (theme = null) => {
       </div>
     </div>
   </section>
+
+  <DataImportExport
+    v-model:show="showImportDialog"
+    :title="`导${['出', '入'][isImportType]}订阅源`"
+    :import-type="isImportType"
+    :export-data="exportJson"
+    :loading="isImporting"
+    @import="handleImport"
+  >
+    <template #import>
+      <div class="mb-2">参考导出数据格式</div>
+      <NInput
+        v-model:value="importData"
+        :disabled="isImporting"
+        rows="20"
+        type="textarea"
+        placeholder="请贴入订阅源数据"
+      />
+    </template>
+
+    <template #export>
+      <span>请自行保存导出数据</span>
+    </template>
+  </DataImportExport>
 </template>
 
 <style lang="scss" scoped></style>
