@@ -10,11 +10,11 @@ import {
   NScrollbar,
   NEmpty,
   NPopconfirm,
-  NModal,
   useMessage,
 } from "naive-ui";
 import { StockGroupManager, localStorage } from "@linxs/toolkit";
 import IconDelete from "@/components/Icons/IconDelete.vue";
+import DataImportExport from "@/components/DataImportExportManager/DataImportExport.vue";
 import { importGroupForGithub } from "./config";
 
 const message = useMessage();
@@ -262,11 +262,15 @@ const handleShowImportDialog = (type) => {
   showImportDialog.value = true;
 
   if (type === 0) {
-    exportJson.value = JSON.stringify(groupManager.getAllGroups(), null, 2);
+    if (groupManager.getAllGroups().length > 0) {
+      exportJson.value = JSON.stringify(groupManager.getAllGroups(), null, 2);
+    } else {
+      exportJson.value = "";
+    }
   }
 };
 // 触发导入
-const handleImportData = async () => {
+const handleImport = async () => {
   isImporting.value = true;
 
   try {
@@ -493,36 +497,27 @@ const handleImportData = async () => {
     </div>
   </div>
 
-  <NModal
+  <DataImportExport
     v-model:show="showImportDialog"
-    preset="dialog"
     :title="`导${['出', '入'][isImportType]}分组数据`"
+    :import-type="isImportType"
+    :export-data="exportJson"
+    :loading="isImporting"
+    @import="handleImport"
   >
-    <section v-if="isImportType === 1">
+    <template #import>
       <div class="mb-2">仅支持从 Github 导入</div>
       <NInput
         v-model:value="importUrl"
         :disabled="isImporting"
         placeholder="请输入 Github 地址"
       />
-      <NButton
-        class="mt-2"
-        type="primary"
-        size="small"
-        :loading="isImporting"
-        @click="handleImportData"
-      >
-        导入
-      </NButton>
-    </section>
+    </template>
 
-    <section v-else>
-      <div class="mb-2">复制到 github 仓库使用 .json 文件保存</div>
-      <div class="whitespace-pre max-h-[680px] overflow-y-auto">
-        {{ exportJson }}
-      </div>
-    </section>
-  </NModal>
+    <template #export>
+      <span>复制到 github 仓库使用 .json 文件保存</span>
+    </template>
+  </DataImportExport>
 </template>
 
 <style lang="scss" scoped>

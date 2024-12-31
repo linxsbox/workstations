@@ -26,7 +26,7 @@ const {
     v-model:show="store.showAddDialog"
     :mask-closable="false"
     preset="card"
-    title="Rss 订阅源管理"
+    title="RSS 订阅源管理"
     class="w-[640px]"
   >
     <div class="flex gap-4 h-[40vh]">
