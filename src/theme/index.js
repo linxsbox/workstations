@@ -106,7 +106,10 @@ export const themeOverrides = {
   DrawerContent: {
     textColor: "var(--text-secondary)", // 字体颜色
   },
-  // NDrawerContent
+  Popover: {
+    color: "var(--bg-primary)", // 背景色
+    textColor: "var(--text-secondary)", // 字体颜色
+  },
   Tag: {
     colorBordered: "var(--ui-common-bg)", // 背景色
     textColor: "var(--text-primary)", // 字体颜色

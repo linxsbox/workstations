@@ -1,22 +1,23 @@
 <script setup>
 import { NModal, NScrollbar, NDivider } from "naive-ui";
 import { storeRss } from "@/stores/storeRss";
-import { useScrollNavigation } from "@/hooks/useScrollNavigation";
+import { useScrollNavigation } from "@linxs/toolkit-vue";
 import AddFormView from "./components/AddFormView.vue";
 import ManagentFormView from "./components/ManagentFormView.vue";
 
 const store = storeRss();
 
+const contentRef = ref(null);
 const activeMenus = ref("addrss");
 const menus = [
   { id: "addrss", label: "添加订阅源" },
   { id: "management", label: "管理订阅源" },
 ];
+
 const {
-  contentRef, // 内容区域的引用
   scrollToSection, // 滚动到指定部分
   handleScroll, // 计算各个部分的位置
-} = useScrollNavigation(menus, (menuId) => {
+} = useScrollNavigation(contentRef, menus, (menuId) => {
   activeMenus.value = menuId;
 });
 </script>

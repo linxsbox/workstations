@@ -1,6 +1,8 @@
 <script setup>
 import { NInputGroup, NSelect, NInput } from "naive-ui";
-import { localStorage } from "@linxs/toolkit";
+import { defaultStorage } from "@linxs/toolkit";
+
+const { localStorage } = defaultStorage();
 
 // 本地存储 key
 const STORAGE_KEY = "USER_SEARCH_TYPE";
@@ -30,9 +32,18 @@ const handleGoSearch = () => {
 <template>
   <div class="search-box">
     <NInputGroup>
-      <NSelect class="search-type flex-none" v-model:value="selected" :options="options" @update:value="handleSelect">
+      <NSelect
+        class="search-type flex-none"
+        v-model:value="selected"
+        :options="options"
+        @update:value="handleSelect"
+      >
       </NSelect>
-      <NInput v-model:value="searchText" :placeholder="placeholder" @keyup.enter="handleGoSearch" />
+      <NInput
+        v-model:value="searchText"
+        :placeholder="placeholder"
+        @keyup.enter="handleGoSearch"
+      />
     </NInputGroup>
   </div>
 </template>
