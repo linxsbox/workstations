@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
-import { localStorage } from "@linxs/toolkit";
+import { defaultStorage } from "@linxs/toolkit";
 import { getPanelKeys, isPanelValid } from "../panelConfig";
+
+const { localStorage } = defaultStorage();
 
 const STORAGE_KEY_PREFIX = "USER_TAB_";
 const MAX_TABS = 6;

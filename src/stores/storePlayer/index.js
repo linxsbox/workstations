@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
-import { localStorage } from "@linxs/toolkit";
+import { defaultStorage } from "@linxs/toolkit";
+
+const { localStorage } = defaultStorage();
 
 const STORAGE_KEY = "PLAY_HISTORY";
 const MAX_HISTORY_LENGTH = 50; // 最大历史记录数

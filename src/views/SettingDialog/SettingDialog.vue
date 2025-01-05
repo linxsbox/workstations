@@ -5,17 +5,18 @@ import { settingMenus } from "@/stores/storeSettings/config";
 import GeneralSection from "./components/GeneralSection.vue";
 import NotificationSection from "./components/NotificationSection.vue";
 import AdvancedSection from "./components/AdvancedSection.vue";
-import { useScrollNavigation } from "@/hooks/useScrollNavigation";
+import { useScrollNavigation } from "@linxs/toolkit-vue";
 
 const store = storeSettings();
 const { showSettingDialog, activeSettingSection } = storeToRefs(store);
 
+const contentRef = ref(null);
+
 const {
-  contentRef, // 内容区域的引用
   scrollToSection, // 滚动到指定部分
   calculateSectionPositions, // 计算各个部分的位置
-  handleScroll,
-} = useScrollNavigation(settingMenus, (menuId) => {
+  handleScroll, // 处理滚动事件
+} = useScrollNavigation(contentRef, settingMenus, (menuId) => {
   store.switchSettingSection(menuId);
 });
 

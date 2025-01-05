@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
-import { localStorage } from "@linxs/toolkit";
+import { defaultStorage } from "@linxs/toolkit";
 import { SettingSectionEnum } from "./config";
+
+const { localStorage } = defaultStorage();
 
 const STORAGE_KEY = "USER_RSS_ACTIVE";
 const STORAGE_KEYS = {

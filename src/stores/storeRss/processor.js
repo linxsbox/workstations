@@ -1,7 +1,7 @@
 import {
   isString,
   isDate,
-  localStorage,
+  defaultStorage,
   calculateTimeDifference,
   genISOWithZoneToDate,
   image2Base64,
@@ -10,6 +10,8 @@ import {
   getNodeTextContent,
 } from "@linxs/toolkit";
 import { RssSourceTypeEnum } from "./config";
+
+const { localStorage } = defaultStorage();
 
 // RSS 源的数据获取类型
 export const FetchTypeEnum = {

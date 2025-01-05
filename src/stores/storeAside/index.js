@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
-import { localStorage } from "@linxs/toolkit";
+import { defaultStorage } from "@linxs/toolkit";
 import { panelConfig, DEFAULT_PANEL, isPanelValid } from "../panelConfig";
+
+const { localStorage } = defaultStorage();
 
 // 本地存储 key
 const STORAGE_KEY = "PANEL_ACTIVE";

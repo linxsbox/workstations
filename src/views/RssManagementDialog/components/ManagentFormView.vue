@@ -1,9 +1,13 @@
 <script setup>
 import { NInput, NButton, NTag, NPopconfirm, useMessage } from "naive-ui";
+import { isEmptyObject } from "@linxs/toolkit";
 import IconClose from "@/components/Icons/IconClose.vue";
 import DataImportExport from "@/components/DataImportExportManager/DataImportExport.vue";
 import { storeRss } from "@/stores/storeRss";
-import { RssSourceTypeEnum, RSS_SOURCE_TYPES } from "@/stores/storeRss/config";
+import { storeAside } from "@/stores/storeAside";
+import { storeTab } from "@/stores/storeTab";
+import { DEFAULT_PANEL } from "@/stores/panelConfig";
+import { RSS_SOURCE_TYPES } from "@/stores/storeRss/config";
 
 const store = storeRss();
 
@@ -64,38 +68,65 @@ const handleShowImportDialog = (type) => {
       return prev;
     }, {});
 
-    exportJson.value = JSON.stringify(data, null, 2);
+    exportJson.value = isEmptyObject(data) ? "" : JSON.stringify(data, null, 2);
   }
 };
 
 // 处理导入
 const handleImport = async () => {
+  let tempJsonData = {};
   try {
-    const data = JSON.parse(importData.value);
-    let lens = 0;
-    Object.keys(data).forEach((type) => {
-      data[type].forEach((item) => {
-        const isExist = rssSources.value.find(
-          (s) => s.sourceUrl === item.sourceUrl
-        );
-        if (!isExist) {
-          store.addSource({
-            id: item.id,
-            title: item.name,
-            sourceUrl: item.sourceUrl,
-            type: type,
-          });
-        } else {
-          lens++;
-        }
-      });
-    });
+    tempJsonData = JSON.parse(importData.value);
+  } catch (error) {
+    return message.error("数据格式错误，请检查");
+  }
 
-    message.success(`导入成功，已排除${lens}条已有订阅源`);
+  isImporting.value = true;
+
+  const rsslist = [];
+  let lens = 0;
+  Object.keys(tempJsonData).forEach((type) => {
+    tempJsonData[type].forEach(async (item) => {
+      const isExist = rssSources.value.find(
+        (s) => s.sourceUrl === item.sourceUrl
+      );
+      if (!isExist) {
+        rsslist.push({
+          id: item.id,
+          name: item.name,
+          sourceUrl: item.sourceUrl,
+          type: type,
+        });
+      } else {
+        lens++;
+      }
+    });
+  });
+
+  // 等待所有 promises 完成
+  try {
+    const { state, failedItems } = await store.batchImportRss(rsslist);
+
+    if (!state || rsslist.length === failedItems.length) {
+      return message.error("导入失败，请检查网络或数据格式");
+    } else if (failedItems.length > 0) {
+      return message.warning(`导入失败的 Rss：${failedItems.join(", ")}`);
+    } else {
+      message.success(
+        `导入成功${lens > 0 ? `，已排除${lens}条已有订阅源` : ""}`
+      );
+
+      storeAside().switchPanel(DEFAULT_PANEL);
+      storeTab().switchTab(DEFAULT_PANEL, "all");
+      store.switchSourceData("all");
+    }
 
     showImportDialog.value = false;
-  } catch (error) {
-    message.error("数据格式错误，请检查");
+  } finally {
+    const st = setTimeout(() => {
+      isImporting.value = false;
+      clearTimeout(st);
+    }, 350);
   }
 };
 </script>

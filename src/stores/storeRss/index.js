@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
-import { localStorage } from "@linxs/toolkit";
+import { defaultStorage } from "@linxs/toolkit";
 import { RSS_SOURCE_TYPES } from "./config";
 import { RssProcessorFactory } from "./processor";
 import { storeTab } from "../storeTab/index";
+import { DEFAULT_PANEL } from "@/stores/panelConfig";
 
+const { localStorage } = defaultStorage();
 const STORAGE_KEY = "USER_RSS_SOURCES";
 
 export const storeRss = defineStore({
@@ -44,18 +46,7 @@ export const storeRss = defineStore({
       }
 
       try {
-        // 使用工厂方法创建处理器并验证源
-        const processor = RssProcessorFactory.create(source);
-        await processor.validate();
-
-        // 获取源信息
-        const sourceInfo = await processor.fetchSourceInfo();
-
-        // 合并源信息和用户提供的信息
-        const newSource = {
-          ...source,
-          ...sourceInfo,
-        };
+        const newSource = await fetchSourceInfo(source);
 
         this.sources.push(newSource);
         this.saveSources();
@@ -63,17 +54,11 @@ export const storeRss = defineStore({
 
         const rssInfo = getRssTypeInfo(source.type);
         const tab = storeTab();
-        if (rssInfo) {
-          tab.addTab("rss", {
-            label: rssInfo.label,
-            value: rssInfo.value,
-          });
-        } else {
-          tab.addTab("rss", {
-            label: source.name,
-            value: source.type,
-          });
-        }
+
+        tab.addTab(DEFAULT_PANEL, {
+          label: rssInfo ? rssInfo.label : source.name,
+          value: rssInfo ? rssInfo.value : source.type,
+        });
 
         return newSource;
       } catch (error) {
@@ -92,7 +77,7 @@ export const storeRss = defineStore({
 
       // 触发当前列表更新
       const tab = storeTab();
-      this.switchSourceData(tab.getActiveTabId("rss"));
+      this.switchSourceData(tab.getActiveTabId(DEFAULT_PANEL));
     },
 
     // 更新 RSS 源
@@ -145,8 +130,65 @@ export const storeRss = defineStore({
           ? newList(this.getSources)
           : newList(this.getSources.filter((item) => item.type === tabId));
     },
+
+    // 批量导入添加 RSS 源
+    async batchImportRss(rsslist = []) {
+      const failedItems = []; // Array to hold names of failed items
+
+      try {
+        const results = await Promise.allSettled(
+          rsslist.map((item) =>
+            fetchSourceInfo(item).catch((error) => {
+              console.error(`Error fetching ${item.name}:`, error); // Log the error
+              failedItems.push(item.name); // Record the failed item's name
+            })
+          )
+        );
+
+        const tab = storeTab();
+
+        const tempSources = [];
+        results.forEach((result) => {
+          result.status === "fulfilled" && tempSources.push(result.value);
+          const rssInfo = getRssTypeInfo(result.value.type);
+
+          tab.addTab(DEFAULT_PANEL, {
+            label: rssInfo ? rssInfo.label : result.value.name,
+            value: rssInfo ? rssInfo.value : result.value.type,
+          });
+        });
+        this.sources.push(...tempSources);
+        this.saveSources();
+        this.closeAddDialog();
+
+        return { state: 1, failedItems };
+      } catch (error) {
+        return { state: 0, failedItems };
+      }
+    },
   },
 });
+
+// 获取 RSS 源信息
+const fetchSourceInfo = async (source) => {
+  try {
+    // 使用工厂方法创建处理器并验证源
+    const processor = RssProcessorFactory.create(source);
+    await processor.validate();
+
+    // 获取源信息
+    const sourceInfo = await processor.fetchSourceInfo();
+
+    // 合并源信息和用户提供的信息
+    return {
+      ...source,
+      ...sourceInfo,
+    };
+  } catch (error) {
+    console.error("添加 RSS 源失败:", error);
+    throw new Error(`添加 RSS 源失败: ${error.message}`);
+  }
+};
 
 // 获取 RSS 类型信息
 const getRssTypeInfo = (type) => {

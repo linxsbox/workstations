@@ -158,7 +158,7 @@ const handleConfirm = (e) => {
             name: `${formValue.value.type}-${selected.label}`,
             sourceUrl: selected.value,
           };
-          return store.addSource(sourceData, true);
+          return await store.addSource(sourceData, true);
         });
 
         await Promise.all(promises);
