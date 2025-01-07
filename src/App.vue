@@ -18,6 +18,10 @@ const storeSettingsInstance = storeSettings();
 
 onMounted(() => {
   storeSettingsInstance.initializeSettings();
+
+  nextTick(() => {
+    storeRssInstance.batchUpdateRss();
+  });
 });
 </script>
 

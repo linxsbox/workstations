@@ -3,26 +3,9 @@ import { NScrollbar } from "naive-ui";
 import TabBarView from "@/components/TabBar/TabBarView.vue";
 import RssListView from "./RssListView.vue";
 import { storeRss } from "@/stores/storeRss";
-import { storeAside } from "@/stores/storeAside";
-import { storeTab } from "@/stores/storeTab";
-import { RssSourceTypeEnum } from "@/stores/storeRss/config";
 
 const store = storeRss();
 const { getCurrentList } = storeToRefs(store);
-
-const { getActivePanel } = storeToRefs(storeAside());
-const { getActiveTabId } = storeToRefs(storeTab());
-
-const tabClass = {
-  [RssSourceTypeEnum.XIAOYUZHOU]: "flex h-[inherit] gap-3",
-  [RssSourceTypeEnum.KR36]: "flex h-[inherit] gap-3",
-  [RssSourceTypeEnum.WECHAT]: "wechat",
-  [RssSourceTypeEnum.RSS]: "6？",
-}
-
-const getCurrentTabClass = computed(() => {
-  return tabClass[getActiveTabId.value(getActivePanel.value)];
-})
 
 // 切换 tab 触发 list 刷新
 const handleSwitchTab = (tabId) => {

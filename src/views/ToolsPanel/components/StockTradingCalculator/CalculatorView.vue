@@ -5,6 +5,7 @@ import {
   NDivider,
   NScrollbar,
   NEmpty,
+  NPopconfirm,
   useMessage,
 } from "naive-ui";
 import { StockGroupManager, defaultStorage } from "@linxs/toolkit";
@@ -12,6 +13,7 @@ import DataImportExport from "@/components/DataImportExportManager/DataImportExp
 import GroupFormView from "./GroupFormView.vue";
 import GroupItemView from "./GroupItemView.vue";
 import TradeFormView from "./TradeFormView.vue";
+import IconRedo from "@/components/Icons/IconRedo.vue";
 import { importGroupForGithub, tradeTypeToValue } from "./config";
 
 const { localStorage } = defaultStorage();
@@ -126,6 +128,12 @@ const handleSubmitTrade = (result) => {
   updateCurrentTradeHistory(currentGroup.value.stockCode);
 
   updateGroupList();
+};
+
+// 撤销此笔交易
+const handleRevokeTradeItem = (index) => {
+  const tradeItem = currentTradeHistory.value[index];
+  groupManager.revokeTradeItem(currentGroup.value.stockCode, tradeItem);
 };
 
 // 显示导入对话框
@@ -257,8 +265,23 @@ const handleImport = async () => {
       </div>
       <NScrollbar class="trade-list" content-class="flex flex-col gap-2">
         <section class="trade-item p-2" v-for="trade in currentTradeHistory">
-          <div :class="tradeTypeToValue(trade.type, true)">
-            [{{ tradeTypeToValue(trade.type) }}]
+          <div class="flex justify-between items-center">
+            <span :class="tradeTypeToValue(trade.type, true)">
+              [{{ tradeTypeToValue(trade.type) }}]
+            </span>
+            <NPopconfirm
+              positive-text="撤销"
+              negative-text="取消"
+              @positive-click.stop="handleRevokeTradeItem(index)"
+            >
+              撤销此笔交易
+              <template #trigger>
+                <IconRedo
+                  class="revoke text-base cursor-pointer rotate-y-180"
+                  title=""
+                />
+              </template>
+            </NPopconfirm>
           </div>
           <div>成交金额：{{ trade.amount }}</div>
           <div>成交价格：{{ trade.price }}</div>
@@ -302,6 +325,14 @@ const handleImport = async () => {
 
 .trade-item {
   border-top: 1px solid var(--border-color);
+  &:hover .revoke {
+    opacity: 1;
+  }
+
+  .revoke {
+    opacity: 0;
+    transition: opacity 0.35s linear;
+  }
 }
 
 .row-divider {
@@ -310,5 +341,9 @@ const handleImport = async () => {
 
 .vertical-divider {
   height: 100%;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
 }
 </style>

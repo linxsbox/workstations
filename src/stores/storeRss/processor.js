@@ -82,11 +82,6 @@ class BaseRssProcessor {
   async fetchSourceInfo() {
     throw new Error("未实现的方法");
   }
-
-  // 通用方法：获取最新条目
-  async fetchLatestItems() {
-    throw new Error("未实现的方法");
-  }
 }
 
 // 标准 RSS 处理器
@@ -98,7 +93,9 @@ class RssProcessor extends BaseRssProcessor {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(text, "text/xml");
 
-      const result = {};
+      const result = {
+        lastUpdateTime: genISOWithZoneToDate().getTime(),
+      };
       if (xmlDoc.firstChild) {
         if (xmlDoc.firstChild.nodeName === "feed") {
           result.title = xmlDoc.querySelector("feed > title")?.textContent;
@@ -129,48 +126,6 @@ class RssProcessor extends BaseRssProcessor {
       return Object.keys(result).length ? result : result;
     } catch (error) {
       console.error("RSS源信息获取失败:", error);
-      throw error;
-    }
-  }
-
-  async fetchLatestItems() {
-    try {
-      const response = await fetch(this.source.url);
-      const text = await response.text();
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(text, "text/xml");
-
-      const result = {};
-      if (xmlDoc.firstChild) {
-        if (xmlDoc.firstChild.nodeName === "feed") {
-          result.title = xmlDoc.querySelector("feed > title")?.textContent;
-          result.description =
-            xmlDoc.querySelector("feed > subtitle")?.textContent;
-          result.link = this.source.sourceUrl;
-
-          const getLink = (item) => {
-            const el = item.querySelector("link");
-            return el?.textContent ? el?.textContent : el.getAttribute("href");
-          };
-
-          const list = Array.from(xmlDoc.querySelectorAll("entry")).map(
-            (item) => {
-              return {
-                title: getNodeTextContent(item, "title"),
-                description: getNodeTextContent(item, "summary"),
-                link: getLink(item),
-                pubDate: rmSecAndZone(getNodeTextContent(item, "published")),
-              };
-            }
-          );
-
-          result.list = list;
-        }
-      }
-
-      return Object.keys(result).length ? result : result;
-    } catch (error) {
-      console.error("RSS条目获取失败:", error);
       throw error;
     }
   }
@@ -289,26 +244,6 @@ class Kr36Processor extends BaseRssProcessor {
       };
     } catch (error) {
       console.error("36Kr RSS 获取失败:", error);
-      throw error;
-    }
-  }
-
-  async fetchLatestItems() {
-    try {
-      const response = await fetch(this.source.url);
-      const text = await response.text();
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(text, "text/xml");
-
-      const items = Array.from(xmlDoc.querySelectorAll("item")).map((item) => ({
-        title: item.querySelector("title")?.textContent,
-        link: item.querySelector("link")?.textContent,
-        pubDate: item.querySelector("pubDate")?.textContent,
-      }));
-
-      return items.slice(0, 10); // 返回最新10条
-    } catch (error) {
-      console.error("RSS条目获取失败:", error);
       throw error;
     }
   }

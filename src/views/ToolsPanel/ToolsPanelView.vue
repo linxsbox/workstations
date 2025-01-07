@@ -15,10 +15,6 @@ const handleOpenToolsDetail = () => {
 const handleCloseToolsDetail = () => {
   showDetailPanel.value = false;
 };
-// 按 Esc 关闭
-const handleEscEvent = () => {
-  handleCloseToolsDetail();
-};
 
 // 点击触发加载组件
 const handleClickToolApp = (item) => {
@@ -54,9 +50,7 @@ const handleClickToolApp = (item) => {
       :default-width="886"
       :max-width="1366"
       :min-width="886"
-      :show-mask="false"
       :mask-closable="false"
-      @esc="handleEscEvent"
     >
       <NDrawerContent>
         <template #header>
@@ -73,7 +67,7 @@ const handleClickToolApp = (item) => {
           </header>
         </template>
         <component :is="currentActiveTool.component" />
-
+        
         <!-- <template #footer>
       </template> -->
       </NDrawerContent>
