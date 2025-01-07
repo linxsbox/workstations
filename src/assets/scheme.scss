@@ -1,5 +1,6 @@
 @mixin baseVar() {
   --color-white: white;
+  --color-white-rgb: 255, 255, 255;
   --color-white-1: #f4f4f5;
   --color-white-2: #e4e4e7;
   --color-white-alpha-1: rgba(255, 255, 255, 0.8);
@@ -12,6 +13,7 @@
   --color-white-alpha-8: rgba(255, 255, 255, 0.05);
 
   --color-black: black;
+  --color-black-rgb: 0, 0, 0;
   --color-black-1: #0a0a0a;
   --color-black-2: #1f1f22;
   --color-black-3: #707070;
@@ -80,6 +82,10 @@
   --ui-modal-border: rgba(102, 102, 102, 0.35); // 模态框边框
   --ui-border-box-shadow: var(--color-black-alpha-5); // 边框
   --ui-placeholder-color: var(--color-black-alpha-4); // 占位符颜色
+  --ui-popconfirm-color: var(--bg-white);
+  --ui-popconfirm-shadow: 0 3px 6px -4px rgba(var(--color-black-rgb), 0.12),
+    0 6px 16px 0 rgba(var(--color-black-rgb), 0.08),
+    0 9px 28px 8px rgba(var(--color-black-rgb), 0.05);
 
   // 7. 交互元素颜色
   --interactive-default: var(--text-secondary); // 默认状态
@@ -136,6 +142,10 @@
   --ui-modal-border: rgba(102, 102, 102, 0.35); // 模态框边框
   --ui-border-box-shadow: var(--color-white-alpha-5); // 边框
   --ui-placeholder-color: var(--color-white-alpha-4); // 占位符颜色
+  --ui-popconfirm-color: var(--color-black-2); // 弹出确认背景
+  --ui-popconfirm-shadow: 0 3px 6px -4px rgba(var(--color-white-rgb), 0.12),
+    0 6px 16px 0 rgba(var(--color-white-rgb), 0.08),
+    0 0 24px 8px rgba(var(--color-white-rgb), 0.05);
 
   // 7. 交互元素颜色
   --interactive-default: var(--text-secondary); // 默认状态

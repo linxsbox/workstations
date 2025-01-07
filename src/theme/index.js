@@ -107,8 +107,9 @@ export const themeOverrides = {
     textColor: "var(--text-secondary)", // 字体颜色
   },
   Popover: {
-    color: "var(--bg-primary)", // 背景色
+    color: "var(--ui-popconfirm-color)", // 背景色
     textColor: "var(--text-secondary)", // 字体颜色
+    boxShadow: "var(--ui-popconfirm-shadow)", // 边框颜色
   },
   Tag: {
     colorBordered: "var(--ui-common-bg)", // 背景色

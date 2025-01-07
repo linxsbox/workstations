@@ -1,5 +1,10 @@
 import { defineStore } from "pinia";
-import { defaultStorage } from "@linxs/toolkit";
+import {
+  isArray,
+  defaultStorage,
+  calculateTimeDifference,
+  genISOWithZoneToDate,
+} from "@linxs/toolkit";
 import { RSS_SOURCE_TYPES } from "./config";
 import { RssProcessorFactory } from "./processor";
 import { storeTab } from "../storeTab/index";
@@ -139,7 +144,6 @@ export const storeRss = defineStore({
         const results = await Promise.allSettled(
           rsslist.map((item) =>
             fetchSourceInfo(item).catch((error) => {
-              console.error(`Error fetching ${item.name}:`, error); // Log the error
               failedItems.push(item.name); // Record the failed item's name
             })
           )
@@ -157,6 +161,7 @@ export const storeRss = defineStore({
             value: rssInfo ? rssInfo.value : result.value.type,
           });
         });
+
         this.sources.push(...tempSources);
         this.saveSources();
         this.closeAddDialog();
@@ -165,6 +170,34 @@ export const storeRss = defineStore({
       } catch (error) {
         return { state: 0, failedItems };
       }
+    },
+
+    // 批量获取更新的 RSS
+    async batchUpdateRss() {
+      const updateItems = this.sources.filter((rss) => {
+        const { h } = calculateTimeDifference(
+          rss.lastUpdateTime,
+          genISOWithZoneToDate().getTime()
+        );
+        return h > 0;
+      });
+
+      try {
+        const results = await Promise.allSettled(
+          updateItems.map(async (item) => {
+            const newSource = await fetchSourceInfo(item);
+
+            const newList = differenceLatestItems(item.list, newSource.list);
+
+            const newRss = this.sources.find((s) => s.id === item.id);
+            newRss.list = newList;
+
+            return newRss;
+          })
+        );
+
+        this.saveSources();
+      } catch (error) {}
     },
   },
 });
@@ -193,4 +226,22 @@ const fetchSourceInfo = async (source) => {
 // 获取 RSS 类型信息
 const getRssTypeInfo = (type) => {
   return RSS_SOURCE_TYPES.find((item) => item.value === type);
+};
+
+// 获取最新数据，合并差异部分
+const differenceLatestItems = (originList = [], newList = []) => {
+  if (!isArray(originList) || !isArray(newList)) {
+    return;
+  }
+
+  newList.forEach((item, index) => {
+    if (item.link) {
+      const originItem = originList.find((i) => i.link === item.link);
+      if (!originItem) {
+        originList.splice(index, 0, item);
+      }
+    }
+  });
+
+  return [...originList];
 };
