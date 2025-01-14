@@ -1,0 +1,106 @@
+@mixin light() {
+  --text-color: #1f2328;
+  --text-color-1: #59636e;
+  --bg-primary: white;
+  --bg-color: #f6f8fa;
+  --bg-color-1: #d1d9e0;
+  --border-color: #d1d9e0;
+
+  --code-bg: #bec6ca;
+  --code-color: #352d2d;
+  --marker-color: #7e95a0;
+}
+
+@mixin dark() {
+  --text-color: #f0f6fc;
+  --text-color-1: #9198a1;
+  --bg-primary: #0e1116;
+  --bg-color: #151b23;
+  --bg-color-1: #3d444d;
+  --border-color: #3d444d;
+
+  --code-color: #dbe5ee;
+  --code-bg: #423e3e;
+  --marker-color: #576066;
+}
+
+.we-markdown {
+  --active-red-color: #e75451;
+  --active-red-color: #673f42;
+  --active-yellow-color: #b9832c;
+  --active-yellow-color: #5a4d37;
+  --active-blue-color: #3b86f7;
+  --active-blue-color-1: #bed4f9;
+  --active-green-color: #69cd68;
+  --active-green-color-1: #cbebce;
+
+  @media (prefers-color-scheme: dark) {
+    @include dark();
+  }
+
+  :deep() {
+    h1 {
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 24px;
+    }
+
+    h3 {
+      font-size: 20px;
+    }
+
+    h4 {
+      font-size: 16px;
+    }
+
+    p code {
+      padding: 1px 6px;
+      margin: 0 2px;
+      color: var(--code-color);
+      background-color: var(--code-bg);
+      border-radius: 4px;
+    }
+
+    ol,
+    ul {
+      padding-left: 32px;
+      margin: 6px 0;
+
+      li::marker {
+        color: var(--marker-color);
+      }
+
+      li:hover::marker {
+        color: var(--active-blue-color);
+      }
+    }
+
+    ol li {
+      list-style-type: decimal;
+    }
+
+    ul li {
+      list-style-type: disc;
+    }
+
+    hr {
+      margin: 16px 0;
+    }
+  }
+}
+
+:root {
+  &[theme-mode="light"] {
+    .we-markdown {
+      @include light();
+    }
+  }
+
+  &[theme-mode="dark"] {
+    .we-markdown {
+      @include dark();
+    }
+  }
+}

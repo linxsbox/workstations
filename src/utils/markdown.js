@@ -10,18 +10,18 @@ mdIt.renderer.rules.fence = function (tokens, idx, options, env, slf) {
   const content = mdIt.utils.escapeHtml(token.content);
   const lang = token.info.trim() || "plaintext";
 
-  const codeBlockBox = `<div class="code-wrapper my-4 bg-[#2b2c2e] border border-[var(--border-secondary)] rounded-md overflow-hidden">
-  <div class="code-header flex justify-between items-center px-2 py-1 border-b border-b-[var(--border-secondary)] sticky top-0">
+  const codeBlockBox = `<div class="code-wrapper my-4 text-[var(--text-color)] bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-md overflow-hidden">
+  <div class="code-header flex justify-between items-center px-2 py-1 bg-[var(--bg-color)] border-b border-b-[var(--border-color)]">
     <div class="code-lang flex items-center gap-2">
       <span class="code-label text-base">Code Lang: </span>
-      <span class="code-lang text-sm">${lang}</span>
+      <span class="code-lang text-sm text-[var(--text-color-1)]">${lang}</span>
     </div>
     <div class="code-operator flex items-center gap-2">
-      <span class="code-copy md-code-copy-button text-sm cursor-pointer active:text-[var(--color-success)]">复制</span>
+      <span class="code-copy md-code-copy-button text-sm cursor-pointer active:text-[var(--active-green-color)]">复制</span>
     </div>
   </div>
 
-  <pre class="p-3"><code class="text-base language-${lang}">${content}</code></pre>
+  <pre class="p-3"><code class="language-${lang} text-ms">${content}</code></pre>
 </div>`;
 
   return codeBlockBox;
