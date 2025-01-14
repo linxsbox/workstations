@@ -179,7 +179,7 @@ export const storeRss = defineStore({
           rss.lastUpdateTime,
           genISOWithZoneToDate().getTime()
         );
-        return h > 0;
+        return h > 12;
       });
 
       try {
@@ -191,6 +191,7 @@ export const storeRss = defineStore({
 
             const newRss = this.sources.find((s) => s.id === item.id);
             newRss.list = newList;
+            newRss.lastUpdateTime = genISOWithZoneToDate().getTime();
 
             return newRss;
           })

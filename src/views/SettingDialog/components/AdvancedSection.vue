@@ -1,5 +1,5 @@
 <script setup>
-// 高级设置组件
+import APIKeyForm from "./Children/APIKeyForm.vue";
 </script>
 
 <template>
@@ -22,6 +22,12 @@
       <h3 class="setting-label text-base font-medium mb-3">快捷键</h3>
       <div class="px-5">
         <div class="text-sm text-gray-400">设置项待实现</div>
+      </div>
+    </div>
+    <div class="setting-item mb-6">
+      <h3 class="setting-label text-base font-medium mb-3">API Key</h3>
+      <div class="px-5">
+        <APIKeyForm />
       </div>
     </div>
   </section>
