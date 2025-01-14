@@ -1,18 +1,13 @@
 <script setup>
-import {
-  NFormItem,
-  NInput,
-  NButton,
-  NScrollbar,
-  NPopconfirm,
-  useMessage,
-} from "naive-ui";
-import { defaultStorage } from "@linxs/toolkit";
+import { NInput, NScrollbar, NPopconfirm, useMessage } from "naive-ui";
+import DOMPurify from "dompurify";
+import { defaultStorage, clipboard, eventListener } from "@linxs/toolkit";
 import IconArrowCircleUp from "@/components/Icons/IconArrowCircleUp.vue";
 import IconDelete from "@/components/Icons/IconDelete.vue";
+import { renderMarkdown } from "@/utils/markdown";
 
 const message = useMessage();
-const { localStorage, sessionStorage } = defaultStorage();
+const { localStorage } = defaultStorage();
 
 const messages = ref([]);
 const chatInput = ref("");
@@ -128,6 +123,29 @@ const handleNewChat = () => {
   }, 2000);
 };
 
+const initCodeCopyHandler = () => {
+  eventListener(document.querySelector(".chat-history"), "click", (event) => {
+    // 使用 closest 方法精确找到目标元素
+    const copyButton = event.target.closest(".code-copy.md-code-copy-button");
+
+    if (copyButton) {
+      // 找到对应的代码块
+      const codeBlock = copyButton.closest(".code-wrapper");
+
+      // 获取代码内容
+      const codeElement = codeBlock.querySelector("pre code");
+      const code = codeElement.textContent;
+
+      // 复制代码
+      clipboard({
+        data: code,
+        success: () => message.success("代码已复制"),
+        error: () => message.error("复制失败"),
+      });
+    }
+  });
+};
+
 onMounted(() => {
   if (!localStorage.get("APIKEYS")?.DeepSeekAPIKey) {
     message.error(
@@ -137,6 +155,7 @@ onMounted(() => {
     return;
   }
   isDisabled.value = false;
+  initCodeCopyHandler();
   const isChat = localStorage.get("SpongeBobChat");
   if (isChat && isChat.length) {
     messages.value = isChat;
@@ -144,6 +163,29 @@ onMounted(() => {
   }
   initChat();
 });
+
+const AsyncRenderHtml = (content) =>
+  defineAsyncComponent({
+    loader: () =>
+      new Promise(async (resolve) => {
+        const md = await renderMarkdown(content || "");
+
+        resolve({
+          render: () =>
+            h("div", {
+              class: "we-markdown",
+              innerHTML: DOMPurify.sanitize(md),
+            }),
+        });
+      }),
+    onError(error, retry, fail, attempts) {
+      if (attempts < 3) {
+        retry(); // 重试加载
+      } else {
+        fail(); // 放弃加载
+      }
+    },
+  });
 </script>
 
 <template>
@@ -168,9 +210,16 @@ onMounted(() => {
         >
           {{ msg.content }}
         </div>
-        <div class="bot-message w-3/4 p-2" v-else>{{ msg.content }}</div>
+
+        <template v-else>
+          <component
+            :is="AsyncRenderHtml(msg.content)"
+            class="bot-message w-3/4 p-2"
+          ></component>
+        </template>
       </div>
-      <div class="loading-container px-2" v-if="!isLoading">
+
+      <div class="loading-container px-2" v-if="isLoading">
         <div class="loader">
           <div></div>
           <div></div>
