@@ -53,11 +53,18 @@ const handleFocus = () => {
   chatInputRef.value.focus();
 };
 
+const toScrollBottom = () => {
+  scrollRef.value.scrollTo({
+    top: document.querySelector(".chat-history-container").offsetHeight,
+    behavior: "smooth",
+  });
+};
 // 请求模型
 const fetchModelApi = async (initRole) => {
   const msg = initRole ? [initRole] : messages.value;
 
   isLoading.value = true;
+  toScrollBottom();
   try {
     const res = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
@@ -82,10 +89,7 @@ const fetchModelApi = async (initRole) => {
     localStorage.set("SpongeBobChat", messages.value);
 
     nextTick(() => {
-      scrollRef.value.scrollTo({
-        top: document.querySelector(".chat-history-container").offsetHeight,
-        behavior: "smooth",
-      });
+      toScrollBottom();
     });
   } catch (error) {
     message.error(error.message);
@@ -205,7 +209,7 @@ const AsyncRenderHtml = (content) =>
         v-for="(msg, index) in messages"
       >
         <div
-          class="user-message max-w-3/4 p-2 rounded-md bg-[var(--interactive-bg-active-1)] whitespace-pre-line"
+          class="user-message max-w-3/4 p-2 text-[var(--text-color-3)] rounded-md bg-[var(--interactive-bg-active-1)] whitespace-pre-line"
           v-if="msg.role === 'user'"
         >
           {{ msg.content }}
@@ -295,6 +299,7 @@ const AsyncRenderHtml = (content) =>
 .input-container {
   background-color: var(--ui-common-bg);
   box-shadow: 0px 0px 6px 3px rgb(137, 137, 137, 0.35);
+
   .chat-input {
     --n-color: transparent !important;
     --n-color-focus: transparent !important;
@@ -343,6 +348,7 @@ const AsyncRenderHtml = (content) =>
       opacity: 0.5;
       transform: scale(0.85);
     }
+
     50% {
       opacity: 1;
       transform: scale(1);
@@ -350,3 +356,5 @@ const AsyncRenderHtml = (content) =>
   }
 }
 </style>
+
+<style lang="scss" scoped src="@/assets/markdown.scss"></style>

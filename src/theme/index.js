@@ -25,7 +25,7 @@ export const themeOverrides = {
     textColor: "var(--text-primary)", // 字体颜色
     // textColorDisabled: "var(--text-disabled)", // 字体禁用颜色
     // textColorPrimary: "var(--text-primary)", // 字体颜色
-    border: "1px solid var(--ui-border-box-shadow)", // 边框
+    border: "1px solid var(--border-color)", // 边框
     textColorError: "var(--color-error)", // type error 字体颜色
     colorError: "var(--color-bg-error)",
     colorHoverError: "var(--color-bg-error-hover)",
@@ -40,7 +40,7 @@ export const themeOverrides = {
     colorFocusWarning: "var(--bg-primary)", // 焦点背景色
     colorFocusError: "var(--color-bg-error-focus)", // 焦点背景色
     colorDisabled: "var(--bg-disabled)", // 禁用背景色
-    border: "1px solid var(--ui-border-box-shadow)", // 边框
+    border: "1px solid var(--border-color)", // 边框
     borderDisabled: "1px solid var(--ui-border-box-shadow)", // 边框禁用
   },
   Select: {},
@@ -51,7 +51,7 @@ export const themeOverrides = {
     color: "var(--ui-common-bg)", // 背景色
     colorActive: "var(--bg-primary)", // 点击背景色
     colorDisabled: "var(--bg-disabled)", // 禁用背景色
-    border: "1px solid var(--ui-border-box-shadow)", // 边框
+    border: "1px solid var(--border-color)", // 边框
     borderDisabled: "1px solid var(--ui-border-box-shadow)", // 边框禁用
     arrowColor: "var(--text-disabled)", // icon 颜色
   },
@@ -70,7 +70,7 @@ export const themeOverrides = {
     textColor: "var(--interactive-default)", // 字体颜色
     colorDisabled: "var(--bg-disabled)", // 字体禁用颜色
     dotColorDisabled: "var(--ui-border-box-shadow)", // 选中时内部背景色
-    boxShadow: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
+    boxShadow: "inset 0 0 0 1px var(--border-color)", // 组件边框颜色
     boxShadowDisabled: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
   },
   Checkbox: {
@@ -80,7 +80,7 @@ export const themeOverrides = {
     dotColorDisabled: "var(--ui-border-box-shadow)", // 选中时内部背景色
     // boxShadow: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
     // boxShadowDisabled: "inset 0 0 0 1px var(--ui-border-box-shadow)", // 组件边框颜色
-    border: "1px solid var(--ui-border-box-shadow)", // 边框
+    border: "1px solid var(--border-color)", // 边框
   },
   Form: {
     labelTextColor: "var(--text-primary)",
@@ -88,12 +88,12 @@ export const themeOverrides = {
   Card: {
     textColor: "var(--text-secondary)", // 字体颜色
     titleTextColor: "var(--text-primary)", // 标题颜色
-    boxShadow: "0 0 0 1px var(--ui-border-box-shadow)", // 边框颜色
+    boxShadow: "0 0 0 1px var(--border-color)", // 边框颜色
   },
   Modal: {
     // Modal 使用 Card 属性也受 Card 定义接管
     textColor: "var(--text-secondary)", // 字体颜色
-    boxShadow: "0 0 0 1px var(--ui-border-box-shadow)", // 边框颜色
+    boxShadow: "0 0 0 1px var(--border-color)", // 边框颜色
   },
   Dialog: {
     textColor: "var(--text-secondary)",
@@ -102,6 +102,7 @@ export const themeOverrides = {
     color: "var(--ui-drawer-bg)",
     textColor: "var(--text-secondary)",
     titleTextColor: "var(--text-primary)", // 字体颜色
+    headerBorderBottom: "1px solid var(--border-color)",
   },
   DrawerContent: {
     textColor: "var(--text-secondary)", // 字体颜色
@@ -114,10 +115,10 @@ export const themeOverrides = {
   Tag: {
     colorBordered: "var(--ui-common-bg)", // 背景色
     textColor: "var(--text-primary)", // 字体颜色
-    border: "1px solid var(--ui-border-box-shadow)", // 边框
+    border: "1px solid var(--border-color)", // 边框
     borderRadius: "var(--border-radius)",
   },
   Divider: {
-    color: "var(--ui-border-box-shadow)", // 线条颜色
+    color: "var(--border-color)", // 线条颜色
   },
 };

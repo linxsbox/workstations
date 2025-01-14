@@ -56,6 +56,7 @@
   --text-disabled: var(--color-black-alpha-4); // 禁用文本
   --text-inverse: var(--color-white); // 反色文本
   --text-color-2: #4c5258;
+  --text-color-3: #353637;
 
   // 3. 背景颜色
   --bg-base: #f4f4f5; // 基础背景
@@ -66,9 +67,10 @@
   --bg-disabled: var(--color-black-alpha-8); // 禁用背景
 
   // 4. 边框颜色
-  --border-color: #e4e4e7; // 默认边框
+  --border-color: #ced2d6; // 默认边框
   --border-primary: var(--border-color-2); // 主色边框
   --border-secondary: #52525b; // 次要边框
+  --border-disabled-color: #ced2d6; // 默认边框
 
   // 5. 状态颜色
   --state-hover: var(--color-black-alpha-7); // 悬浮状态
@@ -116,6 +118,7 @@
   --text-disabled: var(--color-white-alpha-4); // 禁用文本
   --text-inverse: var(--color-black); // 反色文本
   --text-color-2: #80909e;
+  --text-color-3: #ced7e0;
 
   // 3. 背景颜色
   --bg-base: #101011; // 基础背景
@@ -126,9 +129,10 @@
   --bg-disabled: var(--color-white-alpha-8); // 禁用背景
 
   // 4. 边框颜色
-  --border-color: #242424; // 默认边框
+  --border-color: #454d56; // 默认边框
   --border-primary: var(--border-color-2); // 主色边框
   --border-secondary: #52525b; // 次要边框
+  --border-disabled-color: #454d56; // 默认边框
 
   // 5. 状态颜色
   --state-hover: var(--color-white-alpha-7); // 悬浮状态
@@ -137,7 +141,7 @@
 
   // 6. UI 组件特定颜色
   --ui-common-bg: #141415; // 输入框背景
-  --ui-drawer-bg: var(--color-black); // 抽屉组件背景
+  --ui-drawer-bg: #17191c; // 抽屉组件背景
   --ui-modal-bg: #1f1f22; // 模态框背景
   --ui-modal-border: rgba(102, 102, 102, 0.35); // 模态框边框
   --ui-border-box-shadow: var(--color-white-alpha-5); // 边框
