@@ -5,6 +5,7 @@ import { defaultStorage, clipboard, eventListener } from "@linxs/toolkit";
 import IconArrowCircleUp from "@/components/Icons/IconArrowCircleUp.vue";
 import IconDelete from "@/components/Icons/IconDelete.vue";
 import { renderMarkdown } from "@/utils/markdown";
+import { fetchModelApi } from "./config.js";
 
 const message = useMessage();
 const { localStorage } = defaultStorage();
@@ -19,6 +20,50 @@ const isDisabled = ref(false);
 
 const chatInputTrimmed = computed(() => chatInput.value.trim());
 
+const toScrollBottom = () => {
+  scrollRef.value.scrollTo({
+    top: document.querySelector(".chat-history-container").offsetHeight,
+    behavior: "smooth",
+  });
+};
+
+const send = fetchModelApi({
+  before: () => {
+    chatInput.value = ""; // Clear input after sending
+    isLoading.value = true;
+  },
+  after: () => {
+    isLoading.value = false;
+  },
+});
+
+// 初始化
+const initChat = async () => {
+  await send({
+    msgs: {
+      role: "system",
+      content: `You will play the role of SpongeBob SquarePants, a helpful and enthusiastic friend. Your responses should:
+1. Reflect SpongeBob's cheerful and optimistic personality.
+2. Be written in Chinese.
+3. Embody his caring and eager-to-help nature.
+4. Use language that is energetic, positive, and slightly naive.
+5. Respond as if you're always excited to assist and make the conversation fun and engaging.`,
+    },
+    done: (completion) => {
+      messages.value.push({
+        role: "assistant",
+        content: completion.choices[0].message.content,
+      });
+
+      localStorage.set("SpongeBobChat", messages.value);
+
+      nextTick(() => {
+        toScrollBottom();
+      });
+    },
+  });
+};
+
 // 发送消息
 const sendMessage = async () => {
   // 阻止默认的换行行为
@@ -27,9 +72,22 @@ const sendMessage = async () => {
     return;
   }
   messages.value.push({ role: "user", content: chatInput.value.trim() });
-  chatInput.value = ""; // Clear input after sending
 
-  await fetchModelApi();
+  await send({
+    msgs: messages.value,
+    done: (completion) => {
+      messages.value.push({
+        role: "assistant",
+        content: completion.choices[0].message.content,
+      });
+
+      localStorage.set("SpongeBobChat", messages.value);
+
+      nextTick(() => {
+        toScrollBottom();
+      });
+    },
+  });
 };
 
 // 处理换行 shift + enter
@@ -53,64 +111,6 @@ const handleFocus = () => {
   chatInputRef.value.focus();
 };
 
-const toScrollBottom = () => {
-  scrollRef.value.scrollTo({
-    top: document.querySelector(".chat-history-container").offsetHeight,
-    behavior: "smooth",
-  });
-};
-// 请求模型
-const fetchModelApi = async (initRole) => {
-  const msg = initRole ? [initRole] : messages.value;
-
-  isLoading.value = true;
-  toScrollBottom();
-  try {
-    const res = await fetch("https://api.deepseek.com/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.get("APIKEYS")?.DeepSeekAPIKey}`,
-      },
-      body: JSON.stringify({
-        model: "deepseek-chat",
-        messages: msg,
-        stream: false,
-      }),
-    });
-
-    const completion = await res.json();
-
-    messages.value.push({
-      role: "assistant",
-      content: completion.choices[0].message.content,
-    });
-
-    localStorage.set("SpongeBobChat", messages.value);
-
-    nextTick(() => {
-      toScrollBottom();
-    });
-  } catch (error) {
-    message.error(error.message);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// 初始化
-const initChat = async () => {
-  await fetchModelApi({
-    role: "system",
-    content: `You will play the role of SpongeBob SquarePants, a helpful and enthusiastic friend. Your responses should:
-1. Reflect SpongeBob's cheerful and optimistic personality.
-2. Be written in Chinese.
-3. Embody his caring and eager-to-help nature.
-4. Use language that is energetic, positive, and slightly naive.
-5. Respond as if you're always excited to assist and make the conversation fun and engaging.`,
-  });
-};
-
 // 新的神奇海螺
 const handleNewChat = () => {
   isDisabled.value = true;
@@ -127,6 +127,7 @@ const handleNewChat = () => {
   }, 2000);
 };
 
+// 初始化复制处理器
 const initCodeCopyHandler = () => {
   eventListener(document.querySelector(".chat-history"), "click", (event) => {
     // 使用 closest 方法精确找到目标元素

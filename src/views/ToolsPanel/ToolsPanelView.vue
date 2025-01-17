@@ -133,75 +133,72 @@ const handleDeleteItem = (name = "") => {
         添加工具
       </div>
     </NScrollbar>
-
-    <NDrawer
-      v-model:show="showDetailPanel"
-      resizable
-      :default-width="886"
-      :max-width="1366"
-      :min-width="886"
-      :mask-closable="false"
-    >
-      <NDrawerContent>
-        <template #header>
-          <header class="flex justify-between items-center">
-            <h2 v-if="currentActiveTool">{{ currentActiveTool.name }}</h2>
-            <NButton
-              circle
-              type="error"
-              size="small"
-              @click="handleCloseToolsDetail"
-            >
-              <IconClose />
-            </NButton>
-          </header>
-        </template>
-
-        <Transition name="fade" mode="out-in">
-          <component
-            :is="currentActiveTool.component"
-            v-if="currentActiveTool"
-          />
-          <div class="flex justify-center items-center h-full" v-else>
-            <IconExtension class="icon-extension text-7xl" />
-          </div>
-        </Transition>
-
-        <!-- <template #footer>
-      </template> -->
-      </NDrawerContent>
-    </NDrawer>
-
-    <NModal
-      v-model:show="showAddCustomize"
-      preset="dialog"
-      title="添加自定义工具"
-    >
-      <NInput
-        class="mb-3"
-        v-model:value="loadToolsUrl"
-        placeholder="Github 配置文件链接"
-        :disabled="isLoading"
-      ></NInput>
-      <p>仅支持 Vue 3 SFC，以及 @linxs/toolkit 工具库</p>
-      <p>
-        参考：<a
-          class="text-[var(--color-success)]"
-          href="https://github.com/linxsbox/config-data/blob/main/ToolsCfg.json"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          https://github.com/linxsbox/config-data
-        </a>
-      </p>
-      <div class="flex justify-end gap-4 mt-3">
-        <NButton @click="handleCancel" :disabled="isLoading">取消</NButton>
-        <NButton @click="handleLoadSFC" type="primary" :loading="isLoading">
-          添加
-        </NButton>
-      </div>
-    </NModal>
   </div>
+
+  <NDrawer
+    v-model:show="showDetailPanel"
+    resizable
+    :default-width="886"
+    :max-width="1366"
+    :min-width="886"
+    :mask-closable="false"
+  >
+    <NDrawerContent>
+      <template #header>
+        <header class="flex justify-between items-center">
+          <h2 v-if="currentActiveTool">{{ currentActiveTool.name }}</h2>
+          <NButton
+            circle
+            type="error"
+            size="small"
+            @click="handleCloseToolsDetail"
+          >
+            <IconClose />
+          </NButton>
+        </header>
+      </template>
+
+      <Transition name="fade" mode="out-in">
+        <component :is="currentActiveTool.component" v-if="currentActiveTool" />
+        <div class="flex justify-center items-center h-full" v-else>
+          <IconExtension class="icon-extension text-7xl" />
+        </div>
+      </Transition>
+
+      <!-- <template #footer>
+      </template> -->
+    </NDrawerContent>
+  </NDrawer>
+
+  <NModal
+    v-model:show="showAddCustomize"
+    preset="dialog"
+    title="添加自定义工具"
+  >
+    <NInput
+      class="mb-3"
+      v-model:value="loadToolsUrl"
+      placeholder="Github 配置文件链接"
+      :disabled="isLoading"
+    ></NInput>
+    <p>仅支持 Vue 3 SFC，以及 @linxs/toolkit 工具库</p>
+    <p>
+      参考：<a
+        class="text-[var(--color-success)]"
+        href="https://github.com/linxsbox/config-data/blob/main/ToolsCfg.json"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        https://github.com/linxsbox/config-data
+      </a>
+    </p>
+    <div class="flex justify-end gap-4 mt-3">
+      <NButton @click="handleCancel" :disabled="isLoading">取消</NButton>
+      <NButton @click="handleLoadSFC" type="primary" :loading="isLoading">
+        添加
+      </NButton>
+    </div>
+  </NModal>
 </template>
 
 <style lang="scss" scoped>
