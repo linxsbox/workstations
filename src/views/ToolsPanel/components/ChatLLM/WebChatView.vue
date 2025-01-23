@@ -1,6 +1,5 @@
 <script setup>
 import { NInput, NScrollbar, NPopconfirm, useMessage } from "naive-ui";
-import DOMPurify from "dompurify";
 import { defaultStorage, clipboard, eventListener } from "@linxs/toolkit";
 import IconArrowCircleUp from "@/components/Icons/IconArrowCircleUp.vue";
 import IconDelete from "@/components/Icons/IconDelete.vue";
@@ -20,10 +19,14 @@ const isDisabled = ref(false);
 
 const chatInputTrimmed = computed(() => chatInput.value.trim());
 
+const rederMarkdownCache = new Map();
+
 const toScrollBottom = () => {
-  scrollRef.value.scrollTo({
-    top: document.querySelector(".chat-history-container").offsetHeight,
-    behavior: "smooth",
+  nextTick(() => {
+    scrollRef.value.scrollTo({
+      top: document.querySelector(".chat-history-container").offsetHeight,
+      behavior: "smooth",
+    });
   });
 };
 
@@ -31,37 +34,30 @@ const send = fetchModelApi({
   before: () => {
     chatInput.value = ""; // Clear input after sending
     isLoading.value = true;
+    localStorage.set("SpongeBobChat", messages.value);
+    toScrollBottom();
+  },
+  beforeDone: async (completion) => {
+    const md = await renderMarkdown(
+      completion.choices[0].message.content || ""
+    );
+    rederMarkdownCache.set(completion.choices[0].message.content, md);
+
+    messages.value.push({
+      role: "assistant",
+      content: completion.choices[0].message.content,
+      key: Date.now().toString(),
+    });
   },
   after: () => {
     isLoading.value = false;
+    toScrollBottom();
   },
 });
 
 // 初始化
 const initChat = async () => {
-  await send({
-    msgs: {
-      role: "system",
-      content: `You will play the role of SpongeBob SquarePants, a helpful and enthusiastic friend. Your responses should:
-1. Reflect SpongeBob's cheerful and optimistic personality.
-2. Be written in Chinese.
-3. Embody his caring and eager-to-help nature.
-4. Use language that is energetic, positive, and slightly naive.
-5. Respond as if you're always excited to assist and make the conversation fun and engaging.`,
-    },
-    done: (completion) => {
-      messages.value.push({
-        role: "assistant",
-        content: completion.choices[0].message.content,
-      });
-
-      localStorage.set("SpongeBobChat", messages.value);
-
-      nextTick(() => {
-        toScrollBottom();
-      });
-    },
-  });
+  await send({ isInit: true });
 };
 
 // 发送消息
@@ -71,23 +67,13 @@ const sendMessage = async () => {
   if (!chatInput.value.trim()) {
     return;
   }
-  messages.value.push({ role: "user", content: chatInput.value.trim() });
-
-  await send({
-    msgs: messages.value,
-    done: (completion) => {
-      messages.value.push({
-        role: "assistant",
-        content: completion.choices[0].message.content,
-      });
-
-      localStorage.set("SpongeBobChat", messages.value);
-
-      nextTick(() => {
-        toScrollBottom();
-      });
-    },
+  messages.value.push({
+    role: "user",
+    content: chatInput.value.trim(),
+    key: Date.now().toString(),
   });
+
+  await send({ msgs: messages.value });
 };
 
 // 处理换行 shift + enter
@@ -105,10 +91,6 @@ const handleNewline = (event) => {
 
   // 阻止默认的换行行为
   event.preventDefault();
-};
-
-const handleFocus = () => {
-  chatInputRef.value.focus();
 };
 
 // 新的神奇海螺
@@ -151,7 +133,7 @@ const initCodeCopyHandler = () => {
   });
 };
 
-onMounted(() => {
+onMounted(async () => {
   if (!localStorage.get("APIKEYS")?.DeepSeekAPIKey) {
     message.error(
       "请先设置 DeepSeek API Key，设置 -> 高级设置 -> DeepSeek API Key"
@@ -159,38 +141,28 @@ onMounted(() => {
     isDisabled.value = true;
     return;
   }
+
   isDisabled.value = false;
   initCodeCopyHandler();
   const isChat = localStorage.get("SpongeBobChat");
   if (isChat && isChat.length) {
+    for (const msg of isChat) {
+      const md = await renderMarkdown(msg.content || "");
+      rederMarkdownCache.set(msg.content, md);
+    }
+
     messages.value = isChat;
+
+    toScrollBottom();
+    chatInputRef.value.focus();
     return;
   }
   initChat();
 });
 
-const AsyncRenderHtml = (content) =>
-  defineAsyncComponent({
-    loader: () =>
-      new Promise(async (resolve) => {
-        const md = await renderMarkdown(content || "");
-
-        resolve({
-          render: () =>
-            h("div", {
-              class: "we-markdown",
-              innerHTML: DOMPurify.sanitize(md),
-            }),
-        });
-      }),
-    onError(error, retry, fail, attempts) {
-      if (attempts < 3) {
-        retry(); // 重试加载
-      } else {
-        fail(); // 放弃加载
-      }
-    },
-  });
+const getRederMarkdown = (content) => {
+  return rederMarkdownCache.get(content);
+};
 </script>
 
 <template>
@@ -206,7 +178,7 @@ const AsyncRenderHtml = (content) =>
           'chat-message flex w-full',
           msg.role === 'user' ? 'justify-end' : '',
         ]"
-        :key="index"
+        :key="`message-${msg.key}`"
         v-for="(msg, index) in messages"
       >
         <div
@@ -216,12 +188,11 @@ const AsyncRenderHtml = (content) =>
           {{ msg.content }}
         </div>
 
-        <template v-else>
-          <component
-            :is="AsyncRenderHtml(msg.content)"
-            class="bot-message w-3/4 p-2"
-          ></component>
-        </template>
+        <div
+          class="bot-message w-3/4 p-2"
+          v-else
+          v-html="getRederMarkdown(msg.content)"
+        ></div>
       </div>
 
       <div class="loading-container px-2" v-if="isLoading">
